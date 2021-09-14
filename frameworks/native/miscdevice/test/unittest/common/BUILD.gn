@@ -23,13 +23,13 @@ ohos_unittest("LightNativeCommonTest") {
 
   include_dirs = [
     "../../../include",
-    "$SUBSYSTEM_DIR/sensors_miscdevice/utils/include",
+    "$SUBSYSTEM_DIR/miscdevice/utils/include",
     "//utils/native/base/include",
   ]
 
   deps = [
-    "$SUBSYSTEM_DIR/sensors_miscdevice/frameworks/native/miscdevice:liblight_native",
-    "$SUBSYSTEM_DIR/sensors_miscdevice/utils:libmiscdevice_utils",
+    "$SUBSYSTEM_DIR/miscdevice/frameworks/native/miscdevice:liblight_native",
+    "$SUBSYSTEM_DIR/miscdevice/utils:libmiscdevice_utils",
     "//third_party/googletest:gmock_main",
     "//third_party/googletest:gtest_main",
     "//utils/native/base:utils",
@@ -50,13 +50,13 @@ ohos_unittest("VibratorNativeCommonTest") {
 
   include_dirs = [
     "../../../include",
-    "$SUBSYSTEM_DIR/sensors_miscdevice/utils/include",
+    "$SUBSYSTEM_DIR/miscdevice/utils/include",
     "//utils/native/base/include",
   ]
 
   deps = [
-    "$SUBSYSTEM_DIR/sensors_miscdevice/frameworks/native/miscdevice:libvibrator_native",
-    "$SUBSYSTEM_DIR/sensors_miscdevice/utils:libmiscdevice_utils",
+    "$SUBSYSTEM_DIR/miscdevice/frameworks/native/miscdevice:libvibrator_native",
+    "$SUBSYSTEM_DIR/miscdevice/utils:libmiscdevice_utils",
     "//third_party/googletest:gmock_main",
     "//third_party/googletest:gtest_main",
     "//utils/native/base:utils",

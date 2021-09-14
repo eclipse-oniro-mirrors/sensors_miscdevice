@@ -25,14 +25,14 @@ ohos_shared_library("libmiscdevice_service") {
     "include",
     "//utils/native/base/include",
     "//utils/system/safwk/native/include",
-    "$SUBSYSTEM_DIR/sensors_miscdevice/frameworks/native/miscdevice/include",
-    "$SUBSYSTEM_DIR/sensors_miscdevice/utils/include",
+    "$SUBSYSTEM_DIR/miscdevice/frameworks/native/miscdevice/include",
+    "$SUBSYSTEM_DIR/miscdevice/utils/include",
     "//drivers/peripheral/misc/vibrator/interfaces/include",
   ]
 
   cflags = [ "-Wno-error=inconsistent-missing-override" ]
   deps = [
-    "$SUBSYSTEM_DIR/sensors_miscdevice/utils:libmiscdevice_utils",
+    "$SUBSYSTEM_DIR/miscdevice/utils:libmiscdevice_utils",
     "//drivers/peripheral/misc/vibrator/hal:hdi_vibrator",
     "//utils/native/base:utils",
   ]

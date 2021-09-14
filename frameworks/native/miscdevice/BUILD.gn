@@ -26,13 +26,13 @@ ohos_shared_library("liblight_native") {
     "include",
     "//utils/native/base/include",
     "//utils/system/safwk/native/include",
-    "$SUBSYSTEM_DIR/sensors_miscdevice/utils/include",
+    "$SUBSYSTEM_DIR/miscdevice/utils/include",
     "//utils/jni/jnikit/include",
   ]
   cflags = [ "-fstack-protector-all" ]
   deps = [
-    "$SUBSYSTEM_DIR/sensors_miscdevice/services/miscdevice_service:libmiscdevice_service",
-    "$SUBSYSTEM_DIR/sensors_miscdevice/utils:libmiscdevice_utils",
+    "$SUBSYSTEM_DIR/miscdevice/services/miscdevice_service:libmiscdevice_service",
+    "$SUBSYSTEM_DIR/miscdevice/utils:libmiscdevice_utils",
     "//utils/native/base:utils",
   ]
 
@@ -57,12 +57,12 @@ ohos_shared_library("libvibrator_native") {
     "include",
     "//utils/native/base/include",
     "//utils/system/safwk/native/include",
-    "$SUBSYSTEM_DIR/sensors_miscdevice/utils/include",
+    "$SUBSYSTEM_DIR/miscdevice/utils/include",
     "//utils/jni/jnikit/include",
     "//foundation/communication/ipc/interfaces/innerkits/ipc_core/include",
   ]
   deps = [
-    "$SUBSYSTEM_DIR/sensors_miscdevice/utils:libmiscdevice_utils",
+    "$SUBSYSTEM_DIR/miscdevice/utils:libmiscdevice_utils",
     "//foundation/communication/ipc/interfaces/innerkits/ipc_core:ipc_core",
     "//utils/native/base:utils",
   ]
