@@ -28,9 +28,7 @@ ohos_shared_library("libmiscdevice_utils") {
   external_deps = [
     "hisysevent_native:libhisysevent",
     "hiviewdfx_hilog_native:libhilog",
-
     "ipc:ipc_core",
-
     "safwk:system_ability_fwk",
     "samgr_L2:samgr_proxy",
   ]
