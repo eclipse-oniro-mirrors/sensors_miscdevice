@@ -28,7 +28,7 @@ ohos_unittest("MiscdeviceServiceCommonTest") {
     "$SUBSYSTEM_DIR/sensors_miscdevice/frameworks/native/miscdevice/include",
     "$SUBSYSTEM_DIR/sensors_miscdevice/utils/include",
     "//drivers/peripheral/misc/vibrator/interfaces/include",
-    "$SUBSYSTEM_DIR/sensors_miscdevice/services/miscdevice_service/include"
+    "$SUBSYSTEM_DIR/sensors_miscdevice/services/miscdevice_service/include",
   ]
 
   deps = [
@@ -52,8 +52,6 @@ ohos_unittest("MiscdeviceServiceCommonTest") {
 group("unittest") {
   testonly = true
   if (is_phone_product || is_wearable_product) {
-    deps = [ 
-      ":MiscdeviceServiceCommonTest",
-    ]
+    deps = [ ":MiscdeviceServiceCommonTest" ]
   }
 }

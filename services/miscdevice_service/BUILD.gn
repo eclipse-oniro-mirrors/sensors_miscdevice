@@ -17,8 +17,8 @@ SUBSYSTEM_DIR = "//base/sensors"
 ohos_shared_library("libmiscdevice_service") {
   sources = [
     "src/miscdevice_service.cpp",
+    "src/miscdevice_service_impl.cpp",
     "src/miscdevice_service_stub.cpp",
-    "src/miscdevice_service_impl.cpp"
   ]
 
   include_dirs = [
@@ -27,23 +27,25 @@ ohos_shared_library("libmiscdevice_service") {
     "//utils/system/safwk/native/include",
     "$SUBSYSTEM_DIR/sensors_miscdevice/frameworks/native/miscdevice/include",
     "$SUBSYSTEM_DIR/sensors_miscdevice/utils/include",
-    "//drivers/peripheral/misc/vibrator/interfaces/include"
+    "//drivers/peripheral/misc/vibrator/interfaces/include",
   ]
 
   cflags = [ "-Wno-error=inconsistent-missing-override" ]
   deps = [
     "$SUBSYSTEM_DIR/sensors_miscdevice/utils:libmiscdevice_utils",
-    "//utils/native/base:utils",
     "//drivers/peripheral/misc/vibrator/hal:hdi_vibrator",
+    "//utils/native/base:utils",
   ]
 
   external_deps = [
     #"appexecfwk:appexecfwk_base",
     #"appexecfwk:appexecfwk_core",
     "hiviewdfx_hilog_native:libhilog",
+
     #"intent:base",
     #"intent:intent",
     "ipc:ipc_core",
+
     #"communication_L2:ipc_core",
     #"permission:permission_sdk_cxx",
     "permission_standard:libpermissionsdk_standard",

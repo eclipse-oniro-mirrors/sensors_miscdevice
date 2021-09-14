@@ -44,7 +44,6 @@ ohos_unittest("LightNativeTest") {
     "safwk:system_ability_fwk",
     "samgr_L2:samgr_proxy",
   ]
-
 }
 
 #######################################################

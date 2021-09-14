@@ -45,6 +45,7 @@ ohos_shared_library("liblight_native") {
   part_name = "sensors_miscdevice"
   subsystem_name = "sensors"
 }
+
 ##############################################
 ohos_shared_library("libvibrator_native") {
   sources = [
@@ -62,8 +63,8 @@ ohos_shared_library("libvibrator_native") {
   ]
   deps = [
     "$SUBSYSTEM_DIR/sensors_miscdevice/utils:libmiscdevice_utils",
+    "//foundation/communication/ipc/interfaces/innerkits/ipc_core:ipc_core",
     "//utils/native/base:utils",
-    "//foundation/communication/ipc/interfaces/innerkits/ipc_core:ipc_core"
   ]
 
   external_deps = [
