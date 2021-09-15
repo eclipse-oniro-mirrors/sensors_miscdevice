@@ -14,24 +14,22 @@
 import("//build/test.gni")
 
 SUBSYSTEM_DIR = "//base/sensors"
-module_output_path = "sensors/miscdevice/frameworks"
+module_output_path = "sensors/miscdevice/interfaces"
 
 #######################################################
-ohos_unittest("LightNativeTest") {
+ohos_unittest("VibratorNDKTest") {
   module_out_path = module_output_path
-  sources = [ "./light_native_test.cpp" ]
+  sources = [ "unittest/vibrator_agent_native_test.cpp" ]
 
   include_dirs = [
-    "$SUBSYSTEM_DIR/miscdevice/utils/include",
-    "$SUBSYSTEM_DIR/miscdevice/frameworks/native/miscdevice/include",
-    "$SUBSYSTEM_DIR/miscdevice/frameworks/native/miscdevice/include",
-    "$SUBSYSTEM_DIR/miscdevice/frameworks/native/common/include",
+    "../include",
     "//utils/native/base/include",
+    "//utils/system/safwk/native/include",
+    "$SUBSYSTEM_DIR/miscdevice/utils/include",
   ]
 
   deps = [
-    "$SUBSYSTEM_DIR/miscdevice/frameworks/native/miscdevice:liblight_native",
-    "$SUBSYSTEM_DIR/miscdevice/services/miscdevice_service:libmiscdevice_service",
+    "$SUBSYSTEM_DIR/miscdevice/interfaces/native/vibrator:vibrator_interface_native",
     "$SUBSYSTEM_DIR/miscdevice/utils:libmiscdevice_utils",
     "//third_party/googletest:gmock_main",
     "//third_party/googletest:gtest_main",
@@ -49,5 +47,7 @@ ohos_unittest("LightNativeTest") {
 #######################################################
 group("unittest") {
   testonly = true
-  deps = [ ":LightNativeTest" ]
+  if (is_phone_product || is_wearable_product) {
+    deps = [ ":VibratorNDKTest" ]
+  }
 }
