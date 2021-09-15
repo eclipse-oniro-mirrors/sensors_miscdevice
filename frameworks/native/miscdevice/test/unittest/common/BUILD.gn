@@ -47,8 +47,6 @@ ohos_unittest("VibratorNativeCommonTest") {
 group("unittest") {
   testonly = true
   if (is_phone_product || is_wearable_product) {
-    deps = [
-      ":VibratorNativeCommonTest",
-    ]
+    deps = [ ":VibratorNativeCommonTest" ]
   }
 }
