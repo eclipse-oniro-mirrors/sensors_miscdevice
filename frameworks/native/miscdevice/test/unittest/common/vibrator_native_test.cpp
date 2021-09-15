@@ -18,7 +18,6 @@
 
 #include "ipc_skeleton.h"
 #include "iservice_registry.h"
-#include "jni.h"
 
 #include "sensors_errors.h"
 #include "sensors_log_domain.h"

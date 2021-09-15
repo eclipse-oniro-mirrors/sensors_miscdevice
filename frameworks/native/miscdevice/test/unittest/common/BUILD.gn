@@ -17,33 +17,6 @@ SUBSYSTEM_DIR = "//base/sensors"
 module_output_path = "sensors/miscdevice/frameworks"
 
 #######################################################
-ohos_unittest("LightNativeCommonTest") {
-  module_out_path = module_output_path
-  sources = [ "./light_native_test.cpp" ]
-
-  include_dirs = [
-    "../../../include",
-    "$SUBSYSTEM_DIR/miscdevice/utils/include",
-    "//utils/native/base/include",
-  ]
-
-  deps = [
-    "$SUBSYSTEM_DIR/miscdevice/frameworks/native/miscdevice:liblight_native",
-    "$SUBSYSTEM_DIR/miscdevice/utils:libmiscdevice_utils",
-    "//third_party/googletest:gmock_main",
-    "//third_party/googletest:gtest_main",
-    "//utils/native/base:utils",
-  ]
-
-  external_deps = [
-    "hiviewdfx_hilog_native:libhilog",
-    "ipc:ipc_core",
-    "safwk:system_ability_fwk",
-    "samgr_L2:samgr_proxy",
-  ]
-}
-
-#######################################################
 ohos_unittest("VibratorNativeCommonTest") {
   module_out_path = module_output_path
   sources = [ "./vibrator_native_test.cpp" ]
@@ -74,9 +47,6 @@ ohos_unittest("VibratorNativeCommonTest") {
 group("unittest") {
   testonly = true
   if (is_phone_product || is_wearable_product) {
-    deps = [
-      ":LightNativeCommonTest",
-      ":VibratorNativeCommonTest",
-    ]
+    deps = [ ":VibratorNativeCommonTest" ]
   }
 }
