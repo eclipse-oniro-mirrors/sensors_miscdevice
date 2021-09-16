@@ -30,7 +30,7 @@ constexpr int32_t ARGS_LENGTH = 2;
 
 static napi_value Vibrate(napi_env env, napi_callback_info info)
 {
-    size_t argc;
+    size_t argc = 2;
     napi_value args[2];
     napi_value thisArg;
     napi_value result;
@@ -93,7 +93,7 @@ static napi_value Vibrate(napi_env env, napi_callback_info info)
 
 static napi_value Stop(napi_env env, napi_callback_info info)
 {
-    size_t argc;
+    size_t argc = 2;
     napi_value args[2];
     napi_value thisArg;
     napi_value result;
