@@ -21,7 +21,7 @@ Misc devices, including vibrators and LED indicators, are used to send signals e
 ## Directory Structure<a name="section44981327519"></a>
 
 ```
-/base/sensors/sensor_miscdevice
+/base/sensors/miscdevice
 ├── frameworks                 # Framework code
 │   └── native                 # Native methods for the client to connect to services
 ├── interfaces                 # External APIs
