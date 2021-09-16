@@ -24,7 +24,7 @@
 ## Sensors\_miscdevice组件目录<a name="section44981327519"></a>
 
 ```
-/base/sensors/sensor_miscdevice
+/base/sensors/miscdevice
 ├── frameworks                 # 框架代码
 │   └── native                 # 客户端连接服务的Native方法
 ├── interfaces                 # 对外接口存放目录
