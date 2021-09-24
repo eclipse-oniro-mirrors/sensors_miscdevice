@@ -9,9 +9,6 @@
 
 -   [相关仓](#section96071132185310)
 
->![](public_sys-resources/icon-note.gif) **说明：** 
->从API Version 7 开始支持。
-
 ## 简介<a name="section11660541593"></a>
 
 小器件是指用于向外传递信号的设备，包括马达和LED灯，本组件对开发者提供控制马达振动和LED灯开关的能力，其架构图如下所示：
@@ -176,9 +173,7 @@ export default {
 
 泛Sensor子系统
 
-sensors\_start
-
-sensors\_sensor
+[sensors\_sensor](https://gitee.com/openharmony/sensors_sensor)
 
 **sensors\_miscdevice**
 
