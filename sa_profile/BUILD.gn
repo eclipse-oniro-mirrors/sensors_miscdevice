@@ -15,7 +15,7 @@ import("//build/ohos/sa_profile/sa_profile.gni")
 
 ohos_sa_profile("sensors_sa_profiles") {
   sources = [ "3602.xml" ]
-  part_name = "sensors_miscdevice"
+  part_name = "miscdevice"
 }
 
 group("sensors_profiles") {

@@ -1,7 +1,7 @@
 {
   "subsystem": "sensors",
   "parts": {
-    "sensors_miscdevice": {
+    "miscdevice": {
       "module_list": [
         "//base/sensors/miscdevice/interfaces/native/vibrator:vibrator_target",
         "//base/sensors/miscdevice/interfaces/plugin:vibrator_js_target",

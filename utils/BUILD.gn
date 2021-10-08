@@ -32,7 +32,7 @@ ohos_shared_library("libmiscdevice_utils") {
     "safwk:system_ability_fwk",
     "samgr_L2:samgr_proxy",
   ]
-  part_name = "sensors_miscdevice"
+  part_name = "miscdevice"
   subsystem_name = "sensors"
 }
 

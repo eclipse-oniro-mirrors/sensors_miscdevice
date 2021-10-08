@@ -56,7 +56,7 @@ ohos_shared_library("vibrator_interface_native") {
   external_deps = [ "hiviewdfx_hilog_native:libhilog" ]
 
   public_configs = [ ":vibrator_config" ]
-  part_name = "sensors_miscdevice"
+  part_name = "miscdevice"
   subsystem_name = "sensors"
 }
 
