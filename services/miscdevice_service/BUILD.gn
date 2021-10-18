@@ -50,7 +50,7 @@ ohos_shared_library("libmiscdevice_service") {
     #"permission:permission_sdk_cxx",
     "permission_standard:libpermissionsdk_standard",
     "safwk:system_ability_fwk",
-    "samgr_L2:samgr_proxy",
+    "samgr_standard:samgr_proxy",
   ]
 
   part_name = "miscdevice"
