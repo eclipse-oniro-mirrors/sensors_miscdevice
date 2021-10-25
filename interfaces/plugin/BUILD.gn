@@ -13,7 +13,7 @@
 
 #import("//build/config/ohos/rules.gni")
 import("//build/ohos.gni")
-ohos_shared_library("vibrator_js") {
+ohos_shared_library("vibrator") {
   include_dirs = [
     "//third_party/node/src",
     "//native_engine",
@@ -44,5 +44,5 @@ ohos_shared_library("vibrator_js") {
 }
 
 group("vibrator_js_target") {
-  deps = [ ":vibrator_js" ]
+  deps = [ ":vibrator" ]
 }
