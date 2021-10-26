@@ -25,7 +25,8 @@
       "test_list": [
         "//base/sensors/miscdevice/interfaces/native/vibrator/test:unittest",
         "//base/sensors/miscdevice/frameworks/native/miscdevice/test:unittest",
-        "//base/sensors/miscdevice/services/miscdevice_service/test:unittest"
+        "//base/sensors/miscdevice/services/miscdevice_service/test:unittest",
+        "//base/sensors/miscdevice/interfaces/plugin/vibrate/test/unittest:unittest"
       ]
     }
   }
