@@ -60,7 +60,9 @@ describe("VibratorJsTest", function () {
                 console.info('VibratorJsTest001  vibrator success');
                 expect(true).assertTrue();
             }
-            done();
+            setTimeout(()=>{
+                done();
+            }, 500);
         }
         vibrator.vibrate(10, vibrateCallback);
     })
@@ -80,7 +82,9 @@ describe("VibratorJsTest", function () {
                 console.info('VibratorJsTest002  vibrator error');
                 expect(false).assertTrue();
             }
-            done();
+            setTimeout(()=>{
+                done();
+            }, 500);
         }
         vibrator.vibrate(-1, vibrateCallback);
     })
@@ -100,9 +104,11 @@ describe("VibratorJsTest", function () {
                 console.info('VibratorJsTest003  vibrator error');
                 expect(false).assertTrue();
             }
-            done();
+            setTimeout(()=>{
+                done();
+            }, 500);
         }
-        vibrator.vibrate(1000000000000, vibrateCallback);
+        vibrator.vibrate(1800000 + 1, vibrateCallback);
     })
 
     /*
@@ -120,7 +126,9 @@ describe("VibratorJsTest", function () {
                 console.info('VibratorJsTest004  vibrator success');
                 expect(true).assertTrue();
             }
-            done();
+            setTimeout(()=>{
+                done();
+            }, 500);
         }
         vibrator.vibrate(1800000, vibrateCallback);
     })
@@ -140,7 +148,9 @@ describe("VibratorJsTest", function () {
                 console.info('VibratorJsTest005  vibrator error');
                 expect(false).assertTrue();
             }
-            done();
+            setTimeout(()=>{
+                done();
+            }, 500);
         }
         vibrator.vibrate("", vibrateCallback);
     })
@@ -160,7 +170,9 @@ describe("VibratorJsTest", function () {
                 console.info('VibratorJsTest006  vibrator error');
                 expect(false).assertTrue();
             }
-            done();
+            setTimeout(()=>{
+                done();
+            }, 500);
         }
         vibrator.vibrate("xxx", vibrateCallback);
     })
@@ -180,7 +192,9 @@ describe("VibratorJsTest", function () {
                 console.info('VibratorJsTest007  vibrator success');
                 expect(true).assertTrue();
             }
-            done();
+            setTimeout(()=>{
+                done();
+            }, 500);
         }
         vibrator.vibrate("haptic.clock.timer", vibrateCallback);
     })
@@ -200,7 +214,9 @@ describe("VibratorJsTest", function () {
                 console.info('VibratorJsTest008  stop success');
                 expect(true).assertTrue();
             }
-            done();
+            setTimeout(()=>{
+                done();
+            }, 500);
         }
         vibrator.stop("preset", vibrateCallback);
     })
@@ -219,11 +235,15 @@ describe("VibratorJsTest", function () {
                     if (error) {
                         console.info('VibratorJsTest009  stop error');
                         expect(false).assertTrue();
-                        reject();
+                        setTimeout(()=>{
+                            reject();
+                        }, 500);
                     } else {
                         console.info('VibratorJsTest009  stop success');
                         expect(true).assertTrue();
-                        resolve();
+                        setTimeout(()=>{
+                            resolve();
+                        }, 500);
                     }
                 });
             })
@@ -234,11 +254,15 @@ describe("VibratorJsTest", function () {
                 if (error) {
                     console.info('VibratorJsTest009  vibrate error');
                     expect(false).assertTrue();
-                    reject();
+                    setTimeout(()=>{
+                        reject();
+                    }, 500);
                 } else {
                     console.info('VibratorJsTest009  vibrate success');
                     expect(true).assertTrue();
-                    resolve();
+                    setTimeout(()=>{
+                        resolve();
+                    }, 500);
                 }
             });
         })
@@ -266,7 +290,9 @@ describe("VibratorJsTest", function () {
                 console.info('VibratorJsTest010  stop off');
                 expect(false).assertTrue();
             }
-            done();
+            setTimeout(()=>{
+                done();
+            }, 500);
         }
         vibrator.stop("", vibrateCallback);
     })
@@ -281,11 +307,15 @@ describe("VibratorJsTest", function () {
         vibrator.vibrate(1000).then(() => {
             console.log("VibratorJsTest011  vibrate success");
             expect(true).assertTrue();
-            done();
+            setTimeout(()=>{
+                done();
+            }, 500);
         }, (error)=>{
             expect(false).assertTrue();
             console.log("VibratorJsTest011  vibrate error");
-            done();
+            setTimeout(()=>{
+                done();
+            }, 500);
         });
     })
 
@@ -299,11 +329,15 @@ describe("VibratorJsTest", function () {
         vibrator.vibrate(-1).then(() => {
             console.log("VibratorJsTest012  vibrate error");
             expect(false).assertTrue();
-            done();
+            setTimeout(()=>{
+                done();
+            }, 500);
         }, (error)=>{
             expect(true).assertTrue();
             console.log("VibratorJsTest012  vibrate success");
-            done();
+            setTimeout(()=>{
+                done();
+            }, 500);
         });
     })
 
@@ -314,14 +348,18 @@ describe("VibratorJsTest", function () {
      * @tc.require: Issue Number
      */
     it("VibratorJsTest013", 0, async function (done) {
-        vibrator.vibrate(1000000000000000).then(() => {
+        vibrator.vibrate(1800000 + 1).then(() => {
             console.log("VibratorJsTest013  vibrate error");
             expect(false).assertTrue();
-            done();
+            setTimeout(()=>{
+                done();
+            }, 500);
         }, (error)=>{
             expect(true).assertTrue();
             console.log("VibratorJsTest013  vibrate success");
-            done();
+            setTimeout(()=>{
+                done();
+            }, 500);
         });
     })
 
@@ -335,11 +373,15 @@ describe("VibratorJsTest", function () {
         vibrator.vibrate("haptic.clock.timer").then(() => {
             console.log("VibratorJsTest014  vibrate success");
             expect(true).assertTrue();
-            done();
+            setTimeout(()=>{
+                done();
+            }, 500);
         }, (error)=>{
             expect(false).assertTrue();
             console.log("VibratorJsTest014  vibrate error");
-            done();
+            setTimeout(()=>{
+                done();
+            }, 500);
         });
     })
 
@@ -353,11 +395,15 @@ describe("VibratorJsTest", function () {
         vibrator.vibrate("").then(() => {
             console.log("VibratorJsTest015  vibrate error");
             expect(false).assertTrue();
-            done();
+            setTimeout(()=>{
+                done();
+            }, 500);
         }, (error)=>{
             expect(true).assertTrue();
             console.log("VibratorJsTest015  vibrate success");
-            done();
+            setTimeout(()=>{
+                done();
+            }, 500);
         });
     })
 
@@ -371,11 +417,15 @@ describe("VibratorJsTest", function () {
         vibrator.stop("").then(() => {
             console.log("VibratorJsTest016  stop error");
             expect(false).assertTrue();
-            done();
+            setTimeout(()=>{
+                done();
+            }, 500);
         }, (error)=>{
             expect(true).assertTrue();
             console.log("VibratorJsTest016  stop success");
-            done();
+            setTimeout(()=>{
+                done();
+            }, 500);
         });
     })
 
@@ -389,11 +439,15 @@ describe("VibratorJsTest", function () {
         vibrator.stop("preset").then(() => {
             console.log("VibratorJsTest017  off success");
             expect(true).assertTrue();
-            done();
+            setTimeout(()=>{
+                done();
+            }, 500);
         }, (error)=>{
             expect(false).assertTrue();
             console.log("VibratorJsTest017  off error");
-            done();
+            setTimeout(()=>{
+                done();
+            }, 500);
         });
     })
 
@@ -409,11 +463,15 @@ describe("VibratorJsTest", function () {
                 vibrator.stop("time").then(() => {
                     console.log("VibratorJsTest018  stop success");
                     expect(true).assertTrue();
-                    resolve();
+                    setTimeout(()=>{
+                        resolve();
+                    }, 500);
                 }, (error)=>{
                     expect(false).assertTrue();
                     console.log("VibratorJsTest018  stop error");
-                    reject();
+                    setTimeout(()=>{
+                        reject();
+                    }, 500);
                 });
             })
         }
@@ -422,11 +480,15 @@ describe("VibratorJsTest", function () {
             vibrator.vibrate(180000).then(() => {
                 console.log("VibratorJsTest018  vibrate success");
                 expect(true).assertTrue();
-                resolve();
+                setTimeout(()=>{
+                    resolve();
+                }, 500);
             }, (error)=>{
                 expect(false).assertTrue();
                 console.log("VibratorJsTest018  vibrate error");
-                reject();
+                setTimeout(()=>{
+                    reject();
+                }, 500);
             });
         })
 
