@@ -139,7 +139,7 @@ export default {
              console.info("Succeeded in triggering vibration.");
         });
         // Step 3 Stop vibration that is triggered with a specific duration.
-        vibrate.stop(vibrate.VibratorStopMode.VIBRATOR_STOP_MODE_TIME, function(error) {
+        vibrate.stop("time", function(error) {
              if (error) {
                  console.error("Failed to stop vibration. Error code: " + error.code + "; message: " + error.message);
                  return;
@@ -147,7 +147,7 @@ export default {
              console.info("Succeeded in stopping vibration.");
         });
         // Step 4 Trigger vibration based on with a specific effect.
-        vibrate.vibrate(vibrate.EffectId.EFFECT_CLOCK_TIMER, function(error) {
+        vibrate.vibrate("haptic.clock.timer", function(error) {
              if (error) {
                  console.error("Failed to trigger vibration. Error code: " + error.code + "; message: " + error.message);
                  return;
@@ -155,7 +155,7 @@ export default {
              console.info("Succeeded in triggering vibration.");
         });
         // Step 54 Stop vibration that is triggered with a specific effect.
-        vibrate.stop(vibrate.VibratorStopMode.VIBRATOR_STOP_MODE_PRESET, function(error) {
+        vibrate.stop("preset", function(error) {
              if (error) {
                  console.error("Failed to stop vibration. Error code: " + error.code + "; message: " + error.message);
                  return;
