@@ -19,7 +19,7 @@
 
 
 using namespace OHOS::HiviewDFX;
-static constexpr HiLogLabel LABEL = {LOG_CORE, 0xD002708, "VibrateJsAPI"};
+static constexpr HiLogLabel LABEL = {LOG_CORE, 0xD002708, "VibratorJsAPI"};
 
 bool IsMatchType(napi_value value, napi_valuetype type, napi_env env)
 {
@@ -39,7 +39,7 @@ napi_value GetNapiInt32(int32_t number, napi_env env)
     return value;
 }
 
-napi_value NapiGetNamedProperty(napi_value jsonObject, std::string name, napi_env env)
+napi_value NapiGetNamedProperty(napi_value jsonObject, string name, napi_env env)
 {
     napi_value value;
     napi_get_named_property(env, jsonObject, name.c_str(), &value);
@@ -53,7 +53,7 @@ int32_t GetCppInt32(napi_value value, napi_env env)
     return number;
 }
 
-std::string GetCppString(napi_value value, napi_env env)
+string GetCppString(napi_value value, napi_env env)
 {
     size_t bufLength = 0;
     napi_status status = napi_get_value_string_utf8(env, value, nullptr, 0, &bufLength);
@@ -70,6 +70,25 @@ int64_t GetCppInt64(napi_value value, napi_env env)
     int64_t number;
     napi_get_value_int64(env, value, &number);
     return number;
+}
+
+napi_value GreateBusinessError(napi_env env, int32_t errCode, string errMessage, string errName, string errStack)
+{
+    napi_value result = nullptr;
+    napi_value code = nullptr;
+    napi_value message = nullptr;
+    napi_value name = nullptr;
+    napi_value stack = nullptr;
+    NAPI_CALL(env, napi_create_int32(env, errCode, &code));
+    NAPI_CALL(env, napi_create_string_utf8(env, errMessage.data(), NAPI_AUTO_LENGTH, &message));
+    NAPI_CALL(env, napi_create_string_utf8(env, errName.data(), NAPI_AUTO_LENGTH, &name));
+    NAPI_CALL(env, napi_create_string_utf8(env, errStack.data(), NAPI_AUTO_LENGTH, &stack));
+    NAPI_CALL(env, napi_create_object(env, &result));
+    NAPI_CALL(env, napi_set_named_property(env, result, "code", code));
+    NAPI_CALL(env, napi_set_named_property(env, result, "message", message));
+    NAPI_CALL(env, napi_set_named_property(env, result, "name", name));
+    NAPI_CALL(env, napi_set_named_property(env, result, "stack", stack));
+    return result;
 }
 
 void EmitAsyncCallbackWork(AsyncCallbackInfo *asyncCallbackInfo)
@@ -89,16 +108,13 @@ void EmitAsyncCallbackWork(AsyncCallbackInfo *asyncCallbackInfo)
             napi_get_reference_value(env, asyncCallbackInfo->callback[0], &callback);
             napi_value result = nullptr;
             napi_value callResult = nullptr;
-            if (asyncCallbackInfo->status < 0) {
-                napi_value code = nullptr;
-                napi_value message = nullptr;
-                napi_create_string_utf8(env, "-1", NAPI_AUTO_LENGTH, &code);
-                napi_create_string_utf8(env, "failed", NAPI_AUTO_LENGTH, &message);
-                napi_create_error(env, code, message, &result);
+            if (asyncCallbackInfo->error.code < 0) {
+                result = GreateBusinessError(env, asyncCallbackInfo->error.code, asyncCallbackInfo->error.message,
+                    asyncCallbackInfo->error.name, asyncCallbackInfo->error.stack);
             } else {
                 napi_get_undefined(env, &result);
             }
-            napi_call_function(env, nullptr, callback, 2, &result, &callResult);
+            napi_call_function(env, nullptr, callback, 1, &result, &callResult);
             napi_delete_reference(env, asyncCallbackInfo->callback[0]);
             napi_delete_async_work(env, asyncCallbackInfo->asyncWork);
             delete asyncCallbackInfo;
@@ -121,13 +137,14 @@ void EmitPromiseWork(AsyncCallbackInfo *asyncCallbackInfo)
         asyncCallbackInfo->env, nullptr, resourceName, [](napi_env env, void* data) {},
         [](napi_env env, napi_status status, void* data) {
             AsyncCallbackInfo *asyncCallbackInfo = (AsyncCallbackInfo *)data;
-            napi_value message = nullptr;
-            if (asyncCallbackInfo->status == 0) {
-                napi_get_undefined(env, &message);
-                napi_resolve_deferred(env, asyncCallbackInfo->deferred, message);
+            napi_value result = nullptr;
+            if (asyncCallbackInfo->error.code == 0) {
+                napi_get_undefined(env, &result);
+                napi_resolve_deferred(env, asyncCallbackInfo->deferred, result);
             } else {
-                napi_create_int32(env, asyncCallbackInfo->status, &message);
-                napi_reject_deferred(env, asyncCallbackInfo->deferred, message);
+                result = GreateBusinessError(env, asyncCallbackInfo->error.code, asyncCallbackInfo->error.message,
+                    asyncCallbackInfo->error.name, asyncCallbackInfo->error.stack);
+                napi_reject_deferred(env, asyncCallbackInfo->deferred, result);
             }
             napi_delete_async_work(env, asyncCallbackInfo->asyncWork);
             delete asyncCallbackInfo;

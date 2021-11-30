@@ -19,17 +19,17 @@ ohos_shared_library("vibrator") {
     "//native_engine",
     "../native/vibrator/include",
     "./include",
-    "./vibrate/include",
+    "./vibrator/include",
     "//utils/native/base/include",
   ]
   defines = [
-    "APP_LOG_TAG = \"vibrateJs\"",
+    "APP_LOG_TAG = \"vibratorJs\"",
     "LOG_DOMAIN = 0xD002700",
   ]
 
   sources = [
-    "./vibrate/src/vibrate_js.cpp",
-    "./vibrate/src/vibrator_napi_utils.cpp",
+    "./vibrator/src/vibrator_js.cpp",
+    "./vibrator/src/vibrator_napi_utils.cpp",
   ]
 
   deps = [
