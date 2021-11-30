@@ -18,11 +18,13 @@
 #include <cstring>
 #include <iostream>
 
+using std::string;
+const int32_t CALLBACK_RESULT_LENGTH = 2;
 struct AsyncCallbackError {
     int32_t code;
-    std::string message;
-    std::string name;
-    std::string stack;
+    string message;
+    string name;
+    string stack;
 };
 
 struct AsyncCallbackInfo {
@@ -38,7 +40,8 @@ napi_value GetNapiInt32(int32_t number, napi_env env);
 int32_t GetCppInt32(napi_value value, napi_env env);
 void EmitAsyncCallbackWork(AsyncCallbackInfo *async_callback_info);
 int64_t GetCppInt64(napi_value value, napi_env env);
-napi_value NapiGetNamedProperty(napi_value jsonObject, std::string name, napi_env env);
+napi_value NapiGetNamedProperty(napi_value jsonObject, string name, napi_env env);
 void EmitPromiseWork(AsyncCallbackInfo *asyncCallbackInfo);
-std::string GetCppString(napi_value value, napi_env env);
-napi_value GreateBusinessError(napi_env env, int32_t errCode, std::string errMessage, std::string errName, std::string errStack);
+string GetCppString(napi_value value, napi_env env);
+napi_value GreateBusinessError(napi_env env, int32_t errCode, string errMessage,
+    string errName, string errStack);

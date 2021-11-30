@@ -26,69 +26,55 @@
 
 using namespace OHOS::HiviewDFX;
 static constexpr HiLogLabel LABEL = { LOG_CORE, 0xD002757, "VibratorJsAPI" };
-constexpr int32_t ARGS_LENGTH = 2;
+
 
 static napi_value Vibrate(napi_env env, napi_callback_info info)
 {
     size_t argc = 2;
-    napi_value args[2];
+    napi_value args[CALLBACK_RESULT_LENGTH];
     napi_value thisArg;
-    napi_value result;
     NAPI_CALL(env, napi_get_cb_info(env, info, &argc, args, &thisArg, nullptr));
-    if (argc == ARGS_LENGTH) {
-        if (!IsMatchType(args[1], napi_function, env) ||
-            (!IsMatchType(args[0], napi_number, env) && !IsMatchType(args[0], napi_string, env))) {
-            HiLog::Error(LABEL, "%{public}s input parameter type does not match", __func__);
-            napi_get_undefined(env, &result);
-            return result;
+    if (argc < 1 || argc > CALLBACK_RESULT_LENGTH) {
+        HiLog::Error(LABEL, "%{public}s the number of input parameters does not match", __func__);
+        return nullptr;
+    }
+    if (!IsMatchType(args[0], napi_number, env) && !IsMatchType(args[0], napi_string, env)) {
+        HiLog::Error(LABEL, "%{public}s input parameter type does not match number or string", __func__);
+        return nullptr;
+    }
+    AsyncCallbackInfo *asyncCallbackInfo = new AsyncCallbackInfo {
+        .env = env,
+        .asyncWork = nullptr,
+        .deferred = nullptr,
+    };
+    if (IsMatchType(args[0], napi_number, env)) {
+        int32_t duration = GetCppInt32(args[0], env);
+        asyncCallbackInfo->error.code = StartVibratorOnce(duration);
+    } else if (IsMatchType(args[0], napi_string, env)) {
+        size_t bufLength = 0;
+        napi_status status = napi_get_value_string_utf8(env, args[0], nullptr, 0, &bufLength);
+        char *vibratorEffect = (char *)malloc((bufLength + 1) * sizeof(char));
+        status = napi_get_value_string_utf8(env, args[0], vibratorEffect, bufLength + 1, &bufLength);
+        asyncCallbackInfo->error.code = StartVibrator(vibratorEffect);
+    }
+    if (argc == CALLBACK_RESULT_LENGTH) {
+        if (!IsMatchType(args[1], napi_function, env)) {
+            HiLog::Error(LABEL, "%{public}s input parameter type does not match function", __func__);
+            delete asyncCallbackInfo;
+            asyncCallbackInfo = nullptr;
+            return nullptr;
         }
-        AsyncCallbackInfo *asyncCallbackInfo = new AsyncCallbackInfo {
-            .env = env,
-            .asyncWork = nullptr,
-            .deferred = nullptr,
-        };
         napi_create_reference(env, args[1], 1, &asyncCallbackInfo->callback[0]);
-        if (IsMatchType(args[0], napi_number, env)) {
-            int32_t duration = GetCppInt32(args[0], env);
-            asyncCallbackInfo->error.code = StartVibratorOnce(duration);
-        } else if (IsMatchType(args[0], napi_string, env)) {
-            size_t bufLength = 0;
-            napi_status status = napi_get_value_string_utf8(env, args[0], nullptr, 0, &bufLength);
-            char *buff = (char *)malloc((bufLength + 1) * sizeof(char));
-            status = napi_get_value_string_utf8(env, args[0], buff, bufLength + 1, &bufLength);
-            asyncCallbackInfo->error.code = StartVibrator(buff);
-        }
         EmitAsyncCallbackWork(asyncCallbackInfo);
     } else if (argc == 1) {
-        AsyncCallbackInfo *asyncCallbackInfo = new AsyncCallbackInfo {
-            .env = env,
-            .asyncWork = nullptr,
-            .deferred = nullptr,
-        };
         napi_deferred deferred;
         napi_value promise;
         NAPI_CALL(env, napi_create_promise(env, &deferred, &promise));
         asyncCallbackInfo->deferred = deferred;
-        if (IsMatchType(args[0], napi_number, env)) {
-            int32_t duration = GetCppInt32(args[0], env);
-            asyncCallbackInfo->error.code = StartVibratorOnce(duration);
-        } else if (IsMatchType(args[0], napi_string, env)) {
-            size_t bufLength = 0;
-            napi_status status = napi_get_value_string_utf8(env, args[0], nullptr, 0, &bufLength);
-            char *buff = (char *)malloc((bufLength + 1) * sizeof(char));
-            status = napi_get_value_string_utf8(env, args[0], buff, bufLength + 1, &bufLength);
-            asyncCallbackInfo->error.code = StartVibrator(buff);
-        } else {
-            HiLog::Error(LABEL, "%{public}s input parameter type does not match", __func__);
-            return nullptr;
-        }
         EmitPromiseWork(asyncCallbackInfo);
         return promise;
-    } else {
-        HiLog::Error(LABEL, "%{public}s the number of input parameters does not match", __func__);
     }
-    napi_get_undefined(env, &result);
-    return result;
+    return nullptr;
 }
 
 static napi_value Stop(napi_env env, napi_callback_info info)
@@ -96,46 +82,41 @@ static napi_value Stop(napi_env env, napi_callback_info info)
     size_t argc = 2;
     napi_value args[2];
     napi_value thisArg;
-    napi_value result;
     NAPI_CALL(env, napi_get_cb_info(env, info, &argc, args, &thisArg, nullptr));
-    if (argc == ARGS_LENGTH) {
+    if (argc < 1 || argc > CALLBACK_RESULT_LENGTH) {
+        HiLog::Error(LABEL, "%{public}s the number of input parameters does not match", __func__);
+        return nullptr;
+    }
+    if (!IsMatchType(args[0], napi_string, env)) {
+        HiLog::Error(LABEL, "%{public}s input parameter type does not match string", __func__);
+        return nullptr;
+    }
+    AsyncCallbackInfo *asyncCallbackInfo = new AsyncCallbackInfo {
+        .env = env,
+        .asyncWork = nullptr,
+        .deferred = nullptr,
+    };
+    const char *mode = GetCppString(args[0], env).c_str();
+    asyncCallbackInfo->error.code = StopVibrator(mode);
+
+    if (argc == CALLBACK_RESULT_LENGTH) {
         if (!IsMatchType(args[1], napi_function, env) || !IsMatchType(args[0], napi_string, env)) {
             HiLog::Error(LABEL, "%{public}s input parameter type does not match", __func__);
-            napi_get_undefined(env, &result);
-            return result;
-        }
-        AsyncCallbackInfo *asyncCallbackInfo = new AsyncCallbackInfo {
-            .env = env,
-            .asyncWork = nullptr,
-            .deferred = nullptr,
-        };
-        napi_create_reference(env, args[1], 1, &asyncCallbackInfo->callback[0]);
-        const char *mode = GetCppString(args[0], env).c_str();
-        asyncCallbackInfo->error.code = StopVibrator(mode);
-        EmitAsyncCallbackWork(asyncCallbackInfo);
-    } else if (argc == 1) {
-        if (!IsMatchType(args[0], napi_string, env)) {
-            HiLog::Error(LABEL, "%{public}s input parameter type does not match", __func__);
+            delete asyncCallbackInfo;
+            asyncCallbackInfo = nullptr;
             return nullptr;
         }
-        AsyncCallbackInfo *asyncCallbackInfo = new AsyncCallbackInfo {
-            .env = env,
-            .asyncWork = nullptr,
-            .deferred = nullptr,
-        };
+        napi_create_reference(env, args[1], 1, &asyncCallbackInfo->callback[0]);
+        EmitAsyncCallbackWork(asyncCallbackInfo);
+    } else if (argc == 1) {
         napi_deferred deferred;
         napi_value promise;
         NAPI_CALL(env, napi_create_promise(env, &deferred, &promise));
         asyncCallbackInfo->deferred = deferred;
-        const char *mode = GetCppString(args[0], env).c_str();
-        asyncCallbackInfo->error.code = StopVibrator(mode);
         EmitPromiseWork(asyncCallbackInfo);
         return promise;
-    } else {
-        HiLog::Error(LABEL, "%{public}s the number of input parameters does not match", __func__);
     }
-    napi_get_undefined(env, &result);
-    return result;
+    return nullptr;
 }
 
 EXTERN_C_START

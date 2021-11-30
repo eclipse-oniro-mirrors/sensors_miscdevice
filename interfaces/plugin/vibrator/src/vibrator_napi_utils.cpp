@@ -39,7 +39,7 @@ napi_value GetNapiInt32(int32_t number, napi_env env)
     return value;
 }
 
-napi_value NapiGetNamedProperty(napi_value jsonObject, std::string name, napi_env env)
+napi_value NapiGetNamedProperty(napi_value jsonObject, string name, napi_env env)
 {
     napi_value value;
     napi_get_named_property(env, jsonObject, name.c_str(), &value);
@@ -53,7 +53,7 @@ int32_t GetCppInt32(napi_value value, napi_env env)
     return number;
 }
 
-std::string GetCppString(napi_value value, napi_env env)
+string GetCppString(napi_value value, napi_env env)
 {
     size_t bufLength = 0;
     napi_status status = napi_get_value_string_utf8(env, value, nullptr, 0, &bufLength);
@@ -72,7 +72,7 @@ int64_t GetCppInt64(napi_value value, napi_env env)
     return number;
 }
 
-napi_value GreateBusinessError(napi_env env, int32_t errCode, std::string errMessage, std::string errName, std::string errStack)
+napi_value GreateBusinessError(napi_env env, int32_t errCode, string errMessage, string errName, string errStack)
 {
     napi_value result = nullptr;
     napi_value code = nullptr;
@@ -114,7 +114,7 @@ void EmitAsyncCallbackWork(AsyncCallbackInfo *asyncCallbackInfo)
             } else {
                 napi_get_undefined(env, &result);
             }
-            napi_call_function(env, nullptr, callback, 2, &result, &callResult);
+            napi_call_function(env, nullptr, callback, 1, &result, &callResult);
             napi_delete_reference(env, asyncCallbackInfo->callback[0]);
             napi_delete_async_work(env, asyncCallbackInfo->asyncWork);
             delete asyncCallbackInfo;
