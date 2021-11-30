@@ -15,14 +15,22 @@
 
 #include "napi/native_api.h"
 #include "napi/native_node_api.h"
+#include <cstring>
 #include <iostream>
+
+struct AsyncCallbackError {
+    int32_t code;
+    std::string message;
+    std::string name;
+    std::string stack;
+};
 
 struct AsyncCallbackInfo {
     napi_env env;
     napi_async_work asyncWork;
     napi_deferred deferred;
     napi_ref callback[1] = { 0 };
-    int32_t status;
+    AsyncCallbackError error;
 };
 
 bool IsMatchType(napi_value value, napi_valuetype type, napi_env env);
@@ -33,3 +41,4 @@ int64_t GetCppInt64(napi_value value, napi_env env);
 napi_value NapiGetNamedProperty(napi_value jsonObject, std::string name, napi_env env);
 void EmitPromiseWork(AsyncCallbackInfo *asyncCallbackInfo);
 std::string GetCppString(napi_value value, napi_env env);
+napi_value GreateBusinessError(napi_env env, int32_t errCode, std::string errMessage, std::string errName, std::string errStack);

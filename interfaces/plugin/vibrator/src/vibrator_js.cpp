@@ -25,7 +25,7 @@
 #include "vibrator_napi_utils.h"
 
 using namespace OHOS::HiviewDFX;
-static constexpr HiLogLabel LABEL = { LOG_CORE, 0xD002757, "VibrateJsAPI" };
+static constexpr HiLogLabel LABEL = { LOG_CORE, 0xD002757, "VibratorJsAPI" };
 constexpr int32_t ARGS_LENGTH = 2;
 
 static napi_value Vibrate(napi_env env, napi_callback_info info)
@@ -50,13 +50,13 @@ static napi_value Vibrate(napi_env env, napi_callback_info info)
         napi_create_reference(env, args[1], 1, &asyncCallbackInfo->callback[0]);
         if (IsMatchType(args[0], napi_number, env)) {
             int32_t duration = GetCppInt32(args[0], env);
-            asyncCallbackInfo->status = StartVibratorOnce(duration);
+            asyncCallbackInfo->error.code = StartVibratorOnce(duration);
         } else if (IsMatchType(args[0], napi_string, env)) {
             size_t bufLength = 0;
             napi_status status = napi_get_value_string_utf8(env, args[0], nullptr, 0, &bufLength);
             char *buff = (char *)malloc((bufLength + 1) * sizeof(char));
             status = napi_get_value_string_utf8(env, args[0], buff, bufLength + 1, &bufLength);
-            asyncCallbackInfo->status = StartVibrator(buff);
+            asyncCallbackInfo->error.code = StartVibrator(buff);
         }
         EmitAsyncCallbackWork(asyncCallbackInfo);
     } else if (argc == 1) {
@@ -71,13 +71,13 @@ static napi_value Vibrate(napi_env env, napi_callback_info info)
         asyncCallbackInfo->deferred = deferred;
         if (IsMatchType(args[0], napi_number, env)) {
             int32_t duration = GetCppInt32(args[0], env);
-            asyncCallbackInfo->status = StartVibratorOnce(duration);
+            asyncCallbackInfo->error.code = StartVibratorOnce(duration);
         } else if (IsMatchType(args[0], napi_string, env)) {
             size_t bufLength = 0;
             napi_status status = napi_get_value_string_utf8(env, args[0], nullptr, 0, &bufLength);
             char *buff = (char *)malloc((bufLength + 1) * sizeof(char));
             status = napi_get_value_string_utf8(env, args[0], buff, bufLength + 1, &bufLength);
-            asyncCallbackInfo->status = StartVibrator(buff);
+            asyncCallbackInfo->error.code = StartVibrator(buff);
         } else {
             HiLog::Error(LABEL, "%{public}s input parameter type does not match", __func__);
             return nullptr;
@@ -111,7 +111,7 @@ static napi_value Stop(napi_env env, napi_callback_info info)
         };
         napi_create_reference(env, args[1], 1, &asyncCallbackInfo->callback[0]);
         const char *mode = GetCppString(args[0], env).c_str();
-        asyncCallbackInfo->status = StopVibrator(mode);
+        asyncCallbackInfo->error.code = StopVibrator(mode);
         EmitAsyncCallbackWork(asyncCallbackInfo);
     } else if (argc == 1) {
         if (!IsMatchType(args[0], napi_string, env)) {
@@ -128,7 +128,7 @@ static napi_value Stop(napi_env env, napi_callback_info info)
         NAPI_CALL(env, napi_create_promise(env, &deferred, &promise));
         asyncCallbackInfo->deferred = deferred;
         const char *mode = GetCppString(args[0], env).c_str();
-        asyncCallbackInfo->status = StopVibrator(mode);
+        asyncCallbackInfo->error.code = StopVibrator(mode);
         EmitPromiseWork(asyncCallbackInfo);
         return promise;
     } else {

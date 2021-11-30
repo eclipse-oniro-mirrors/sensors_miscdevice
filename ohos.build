@@ -23,7 +23,7 @@
         }
       ],
       "test_list": [
-        "//base/sensors/miscdevice/interfaces/plugin/vibrate/test/unittest:unittest"
+        "//base/sensors/miscdevice/interfaces/plugin/vibrator/test/unittest:unittest"
       ]
     }
   }

@@ -116,7 +116,7 @@ The APIs provided for the vibrator are used to trigger and stop vibration. The f
 
 ### How to Use<a name="section79302049192310"></a>
 
-1.  Import the  **vibrate**  package.
+1.  Import the  **vibrator**  package.
 2.  Trigger vibration with a specific duration.
 3.  Stop vibration that is triggered with a specific duration.
 4.  Trigger vibration with a specific effect.
@@ -125,39 +125,39 @@ The APIs provided for the vibrator are used to trigger and stop vibration. The f
 The following sample code provides a complete process of using the vibrator APIs:
 
 ```
-//Step 1 Import the vibrate package.
-import vibrate from '@ohos.vibrate';
+//Step 1 Import the vibrator package.
+import vibrator from '@ohos.vibrator';
 export default {
     onCreate() {
         console.info('MiscdeviceJsAPI AceApplication onCreate');
         // Step 2 Trigger vibration with a specific duration.
-        vibrate.vibrate(100, function(error) {
+        vibrator.vibrate(100, function(error) {
              if (error) {
-                 console.error("Failed to trigger vibration. Error code: " + error.code + "; message: " + error.message);
+                 console.error("Failed to trigger vibration. Error code: " + error.code);
                  return;
              }
              console.info("Succeeded in triggering vibration.");
         });
         // Step 3 Stop vibration that is triggered with a specific duration.
-        vibrate.stop("time", function(error) {
+        vibrator.stop("time", function(error) {
              if (error) {
-                 console.error("Failed to stop vibration. Error code: " + error.code + "; message: " + error.message);
+                 console.error("Failed to stop vibration. Error code: " + error.code);
                  return;
              }
              console.info("Succeeded in stopping vibration.");
         });
         // Step 4 Trigger vibration based on with a specific effect.
-        vibrate.vibrate("haptic.clock.timer", function(error) {
+        vibrator.vibrate("haptic.clock.timer", function(error) {
              if (error) {
-                 console.error("Failed to trigger vibration. Error code: " + error.code + "; message: " + error.message);
+                 console.error("Failed to trigger vibration. Error code: " + error.code);
                  return;
              }
              console.info("Succeeded in triggering vibration.");
         });
         // Step 54 Stop vibration that is triggered with a specific effect.
-        vibrate.stop("preset", function(error) {
+        vibrator.stop("preset", function(error) {
              if (error) {
-                 console.error("Failed to stop vibration. Error code: " + error.code + "; message: " + error.message);
+                 console.error("Failed to stop vibration. Error code: " + error.code);
                  return;
              }
              console.info("Succeeded in stopping vibration.");

@@ -116,7 +116,7 @@
 
 ### 使用说明<a name="section79302049192310"></a>
 
-1.  导入vibrate包。
+1.  导入vibrator包。
 2.  触发马达按照指定持续时间振动。
 3.  停止马达按照指定持续时间振动。
 4.  触发按照指定振动效果字符串振动。
@@ -126,38 +126,38 @@
 
 ```
 //步骤1 导包
-import vibrate from '@ohos.vibrate';
+import vibrator from '@ohos.vibrator';
 export default {
     onCreate() {
         console.info('MiscdeviceJsAPI AceApplication onCreate');
         //步骤2 触发马达按照指定持续的时间振动
-        vibrate.vibrate(100, function(error) {
+        vibrator.vibrate(100, function(error) {
              if (error) {
-                 console.error("Failed to trigger vibration. Error code: " + error.code + "; message: " + error.message);
+                 console.error("Failed to trigger vibration. Error code: " + error.code);
                  return;
              }
              console.info("Succeeded in triggering vibration.");
         });
         //步骤3 停止马达按照指定持续的时间振动
-        vibrate.stop("time", function(error) {
+        vibrator.stop("time", function(error) {
              if (error) {
-                 console.error("Failed to stop vibration. Error code: " + error.code + "; message: " + error.message);
+                 console.error("Failed to stop vibration. Error code: " + error.code);
                  return;
              }
              console.info("Succeeded in stopping vibration.");
         });
         //步骤4 触发马达按照指定的字符串效果振动
-        vibrate.vibrate("haptic.clock.timer", function(error) {
+        vibrator.vibrate("haptic.clock.timer", function(error) {
              if (error) {
-                 console.error("Failed to trigger vibration. Error code: " + error.code + "; message: " + error.message);
+                 console.error("Failed to trigger vibration. Error code: " + error.code);
                  return;
              }
              console.info("Succeeded in triggering vibration.");
         });
         //步骤5 停止马达按照指定的字符串效果振动
-        vibrate.stop("preset", function(error) {
+        vibrator.stop("preset", function(error) {
              if (error) {
-                 console.error("Failed to stop vibration. Error code: " + error.code + "; message: " + error.message);
+                 console.error("Failed to stop vibration. Error code: " + error.code);
                  return;
              }
              console.info("Succeeded in stopping vibration.");
