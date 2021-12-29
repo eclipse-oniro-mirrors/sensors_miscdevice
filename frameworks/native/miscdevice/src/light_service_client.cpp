@@ -94,7 +94,7 @@ int32_t LightServiceClient::Light(int32_t lightId, uint64_t brightness, uint32_t
     int32_t ret = InitServiceClient();
     if (ret != ERR_OK) {
         HiLog::Error(LABEL, "%{public}s InitServiceClient failed, ret : %{public}d", __func__, ret);
-        return SENSOR_NATIVE_GET_SERVICE_ERR;
+        return MISC_NATIVE_GET_SERVICE_ERR;
     }
     return miscdeviceProxy_->Light(lightId, brightness, timeOn, timeOff);
 }
@@ -105,7 +105,7 @@ int32_t LightServiceClient::PlayLightEffect(int32_t lightId, const std::string &
     int32_t ret = InitServiceClient();
     if (ret != ERR_OK) {
         HiLog::Error(LABEL, "%{public}s InitServiceClient failed, ret : %{public}d", __func__, ret);
-        return SENSOR_NATIVE_GET_SERVICE_ERR;
+        return MISC_NATIVE_GET_SERVICE_ERR;
     }
     return miscdeviceProxy_->PlayLightEffect(lightId, type);
 }
@@ -116,7 +116,7 @@ int32_t LightServiceClient::StopLightEffect(int32_t lightId)
     int32_t ret = InitServiceClient();
     if (ret != ERR_OK) {
         HiLog::Error(LABEL, "%{public}s InitServiceClient failed, ret : %{public}d", __func__, ret);
-        return SENSOR_NATIVE_GET_SERVICE_ERR;
+        return MISC_NATIVE_GET_SERVICE_ERR;
     }
     return miscdeviceProxy_->StopLightEffect(lightId);
 }

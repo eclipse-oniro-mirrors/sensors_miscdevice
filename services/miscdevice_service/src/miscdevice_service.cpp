@@ -338,7 +338,7 @@ int32_t MiscdeviceService::SetVibratorParameter(int32_t vibratorId, const std::s
 
 std::string MiscdeviceService::GetVibratorParameter(int32_t vibratorId, const std::string &cmd)
 {
-    return nullptr;
+    return cmd;
 }
 
 std::vector<int32_t> MiscdeviceService::GetLightSupportId()

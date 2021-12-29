@@ -42,6 +42,5 @@ void EmitAsyncCallbackWork(AsyncCallbackInfo *async_callback_info);
 int64_t GetCppInt64(napi_value value, napi_env env);
 napi_value NapiGetNamedProperty(napi_value jsonObject, string name, napi_env env);
 void EmitPromiseWork(AsyncCallbackInfo *asyncCallbackInfo);
-string GetCppString(napi_value value, napi_env env);
 napi_value GreateBusinessError(napi_env env, int32_t errCode, string errMessage,
     string errName, string errStack);
