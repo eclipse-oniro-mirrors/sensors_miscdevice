@@ -69,6 +69,10 @@ int32_t StartVibratorOnce(uint32_t duration)
 
 int32_t StopVibrator(const char *mode)
 {
+    if (mode == nullptr) {
+        HiLog::Error(LABEL, "%{public}s mode is invalid", __func__);
+        return OHOS::Sensors::ERROR;
+    }
     if (strcmp(mode, "time") != 0 && strcmp(mode, "preset") != 0) {
         HiLog::Error(LABEL, "%{public}s mode is invalid, mode is %{public}s", __func__, mode);
         return OHOS::Sensors::ERROR;

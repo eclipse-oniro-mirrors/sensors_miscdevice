@@ -31,18 +31,12 @@ constexpr int32_t SECONDS_HALF_HOUR = 1800;
 }  // namespace
 
 std::map<int32_t, int64_t> DmdReport::eventMap_ = {
-    { JNI_ENV_VAR_EXCEPTION, 0 },
     { CLASS_NOT_FOUND, 0 },
     { NATIVE_METHOD_REGISTER_EXCEPTION, 0 },
-    { JAVA_VM_THREAD_ATTACH_EXCEPTION, 0 },
-    { SENSOR_SERVICE_EXCEPTION, 0 },
     { MISC_SERVICE_EXCEPTION, 0 },
-    { SENSOR_SERVICE_IPC_EXCEPTION, 0 },
     { MISC_SERVICE_IPC_EXCEPTION, 0 },
-    { SENSOR_HIDL_SERVICE_EXCEPTION, 0 },
-    { LIGHT_HIDL_SERVICE_EXCEPTION, 0 },
-    { VIBRATOR_HIDL_SERVICE_EXCEPTION, 0 },
-    { SENSOR_DATA_CHANNEL_EXCEPTION, 0 },
+    { LIGHT_HDF_SERVICE_EXCEPTION, 0 },
+    { VIBRATOR_HDF_SERVICE_EXCEPTION, 0 },
 };
 
 std::mutex DmdReport::eventMutex_;
@@ -50,30 +44,18 @@ std::mutex DmdReport::eventMutex_;
 static std::string GetEventName(int32_t eventId)
 {
     switch (eventId) {
-        case JNI_ENV_VAR_EXCEPTION:
-            return "JniEnvVarException";
         case CLASS_NOT_FOUND:
             return "ClassNotFound";
         case NATIVE_METHOD_REGISTER_EXCEPTION:
             return "NativeMethodRegisterException";
-        case JAVA_VM_THREAD_ATTACH_EXCEPTION:
-            return "JavaVmThreadAttachException";
-        case SENSOR_SERVICE_EXCEPTION:
-            return "SensorServiceException";
         case MISC_SERVICE_EXCEPTION:
             return "MiscServiceException";
-        case SENSOR_SERVICE_IPC_EXCEPTION:
-            return "SensorServiceIpcException";
         case MISC_SERVICE_IPC_EXCEPTION:
             return "MiscServiceIpcException";
-        case SENSOR_HIDL_SERVICE_EXCEPTION:
-            return "SensorHidlServiceException";
-        case LIGHT_HIDL_SERVICE_EXCEPTION:
-            return "LightHidlServiceException";
-        case VIBRATOR_HIDL_SERVICE_EXCEPTION:
-            return "VibratorHidlServiceException";
-        case SENSOR_DATA_CHANNEL_EXCEPTION:
-            return "SensorDataChannelException";
+        case LIGHT_HDF_SERVICE_EXCEPTION:
+            return "LightHdfServiceException";
+        case VIBRATOR_HDF_SERVICE_EXCEPTION:
+            return "VibratorHdfServiceException";
         default:
             return "";
     }
