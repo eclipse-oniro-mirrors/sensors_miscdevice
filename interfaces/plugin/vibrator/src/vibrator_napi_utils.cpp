@@ -53,18 +53,6 @@ int32_t GetCppInt32(napi_value value, napi_env env)
     return number;
 }
 
-string GetCppString(napi_value value, napi_env env)
-{
-    size_t bufLength = 0;
-    napi_status status = napi_get_value_string_utf8(env, value, nullptr, 0, &bufLength);
-    char *buff = (char *)malloc((bufLength + 1) * sizeof(char));
-    if (buff == nullptr) {
-        HiLog::Error(LABEL, "js obj to str malloc failed");
-    }
-    status = napi_get_value_string_utf8(env, value, buff, bufLength + 1, &bufLength);
-    return buff;
-}
-
 int64_t GetCppInt64(napi_value value, napi_env env)
 {
     int64_t number;
@@ -79,15 +67,15 @@ napi_value GreateBusinessError(napi_env env, int32_t errCode, string errMessage,
     napi_value message = nullptr;
     napi_value name = nullptr;
     napi_value stack = nullptr;
-    NAPI_CALL(env, napi_create_int32(env, errCode, &code));
-    NAPI_CALL(env, napi_create_string_utf8(env, errMessage.data(), NAPI_AUTO_LENGTH, &message));
-    NAPI_CALL(env, napi_create_string_utf8(env, errName.data(), NAPI_AUTO_LENGTH, &name));
-    NAPI_CALL(env, napi_create_string_utf8(env, errStack.data(), NAPI_AUTO_LENGTH, &stack));
-    NAPI_CALL(env, napi_create_object(env, &result));
-    NAPI_CALL(env, napi_set_named_property(env, result, "code", code));
-    NAPI_CALL(env, napi_set_named_property(env, result, "message", message));
-    NAPI_CALL(env, napi_set_named_property(env, result, "name", name));
-    NAPI_CALL(env, napi_set_named_property(env, result, "stack", stack));
+    napi_create_int32(env, errCode, &code);
+    napi_create_string_utf8(env, errMessage.data(), NAPI_AUTO_LENGTH, &message);
+    napi_create_string_utf8(env, errName.data(), NAPI_AUTO_LENGTH, &name);
+    napi_create_string_utf8(env, errStack.data(), NAPI_AUTO_LENGTH, &stack);
+    napi_create_object(env, &result);
+    napi_set_named_property(env, result, "code", code);
+    napi_set_named_property(env, result, "message", message);
+    napi_set_named_property(env, result, "name", name);
+    napi_set_named_property(env, result, "stack", stack);
     return result;
 }
 
