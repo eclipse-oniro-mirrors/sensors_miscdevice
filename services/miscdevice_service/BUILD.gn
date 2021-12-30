@@ -38,16 +38,8 @@ ohos_shared_library("libmiscdevice_service") {
   ]
 
   external_deps = [
-    #"appexecfwk:appexecfwk_base",
-    #"appexecfwk:appexecfwk_core",
     "hiviewdfx_hilog_native:libhilog",
-
-    #"intent:base",
-    #"intent:intent",
     "ipc:ipc_core",
-
-    #"communication_L2:ipc_core",
-    #"permission:permission_sdk_cxx",
     "permission_standard:libpermissionsdk_standard",
     "safwk:system_ability_fwk",
     "samgr_standard:samgr_proxy",
