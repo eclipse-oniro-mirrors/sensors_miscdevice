@@ -61,9 +61,7 @@ ohos_shared_library("libvibrator_native") {
     "//utils/jni/jnikit/include",
     "//foundation/communication/ipc/interfaces/innerkits/ipc_core/include",
   ]
-  deps = [
-    "$SUBSYSTEM_DIR/miscdevice/utils:libmiscdevice_utils",
-  ]
+  deps = [ "$SUBSYSTEM_DIR/miscdevice/utils:libmiscdevice_utils" ]
 
   external_deps = [
     "hiviewdfx_hilog_native:libhilog",
