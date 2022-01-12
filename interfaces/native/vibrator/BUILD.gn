@@ -48,7 +48,7 @@ ohos_shared_library("vibrator_interface_native") {
 
   deps = [
     "$SUBSYSTEM_DIR/frameworks/native/miscdevice:libvibrator_native",
-    "$SUBSYSTEM_DIR/interfaces/innerkits/vibrator:libvibrator_ndk",
+    "$SUBSYSTEM_DIR/interfaces/native/vibrator:libvibrator_ndk",
   ]
 
   external_deps = [

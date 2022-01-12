@@ -17,7 +17,7 @@ ohos_shared_library("vibrator") {
   include_dirs = [
     "//third_party/node/src",
     "//native_engine",
-    "../innerkits/vibrator/include",
+    "../native/vibrator/include",
     "./include",
     "./vibrator/include",
     "//utils/native/base/include",
@@ -32,7 +32,7 @@ ohos_shared_library("vibrator") {
     "./vibrator/src/vibrator_napi_utils.cpp",
   ]
 
-  deps = [ "//base/sensors/miscdevice/interfaces/innerkits/vibrator:vibrator_interface_native" ]
+  deps = [ "//base/sensors/miscdevice/interfaces/native/vibrator:vibrator_interface_native" ]
   external_deps = [
     "hiviewdfx_hilog_native:libhilog",
     "napi:ace_napi",
