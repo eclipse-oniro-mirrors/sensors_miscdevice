@@ -32,7 +32,7 @@ public:
 
     int32_t Start(const char *effectType) override;
 
-    int32_t Stop(enum VibratorStopMode mode) override;
+    int32_t Stop(VibratorStopMode mode) override;
 
     int32_t DestroyHdiConnection() override;
 

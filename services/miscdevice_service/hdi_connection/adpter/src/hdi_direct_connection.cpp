@@ -60,7 +60,7 @@ int32_t HdiDirectConnection::Start(const char *effectType)
     return ERR_OK;
 }
 
-int32_t HdiDirectConnection::Stop(enum VibratorStopMode mode)
+int32_t HdiDirectConnection::Stop(VibratorStopMode mode)
 {
     int32_t ret = vibratorInterface->Stop(static_cast<VibratorMode>(mode));
     if (ret < 0) {

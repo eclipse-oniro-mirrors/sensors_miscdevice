@@ -12,12 +12,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+#include "compatible_connection.h"
 
 #include <ctime>
 #include <string>
 #include <vector>
 
-#include "compatible_connection.h"
 #include "sensors_errors.h"
 #include "sensors_log_domain.h"
 
@@ -73,7 +73,7 @@ int32_t CompatibleConnection::Start(const char *effectType)
     return ERR_OK;
 }
 
-int32_t CompatibleConnection::Stop(enum VibratorStopMode mode)
+int32_t CompatibleConnection::Stop(VibratorStopMode mode)
 {
     HiLog::Info(LABEL, "%{public}s in", __func__);
     if (mode < 0 || mode >= VIBRATOR_STOP_MODE_INVALID) {

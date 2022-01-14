@@ -37,7 +37,7 @@ public:
 
     virtual int32_t Start(const char *effectType) = 0;
 
-    virtual int32_t Stop(enum VibratorStopMode mode) = 0;
+    virtual int32_t Stop(VibratorStopMode mode) = 0;
 
     virtual int32_t DestroyHdiConnection() = 0;
 
