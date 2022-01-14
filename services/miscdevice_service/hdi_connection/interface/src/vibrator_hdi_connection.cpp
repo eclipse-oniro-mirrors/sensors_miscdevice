@@ -63,7 +63,7 @@ int32_t VibratorHdiConnection::Start(const char *effectType)
     return ERR_OK;
 }
 
-int32_t VibratorHdiConnection::Stop(enum VibratorStopMode mode)
+int32_t VibratorHdiConnection::Stop(VibratorStopMode mode)
 {
     int32_t ret = iVibratorHdiConnection_->Stop(mode);
     if (ret < 0) {
