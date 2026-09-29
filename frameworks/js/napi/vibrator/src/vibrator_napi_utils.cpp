@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2022 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2026 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -406,6 +406,10 @@ napi_value ConvertToJsVibratorInfo(const napi_env& env, const VibratorInfos& vib
     }
     if (!CreateBooleanProperty(env, jsObject, "isHdHapticSupported", vibratorInfo.isSupportHdHaptic)) {
         MISC_HILOGE("Create vibratorInfo.isSupportHdHaptic failed");
+        return jsObject;
+    }
+    if (!CreateBooleanProperty(env, jsObject, "isSupportIntensity", vibratorInfo.isSupportIntensity)) {
+        MISC_HILOGE("Create vibratorInfo.isSupportIntensity failed");
         return jsObject;
     }
     if (!CreateBooleanProperty(env, jsObject, "isLocalVibrator", vibratorInfo.isLocalVibrator)) {

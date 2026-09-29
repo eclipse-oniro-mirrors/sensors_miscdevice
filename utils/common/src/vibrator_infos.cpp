@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2022-2026 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -465,6 +465,10 @@ bool VibratorInfoIPC::Marshalling(Parcel &parcel) const
         MISC_HILOGE("Write isLocalVibrator failed");
         return false;
     }
+    if (!parcel.WriteBool(isSupportIntensity)) {
+        MISC_HILOGE("Write isSupportIntensity failed");
+        return false;
+    }
     return true;
 }
 
@@ -505,6 +509,12 @@ VibratorInfoIPC* VibratorInfoIPC::Unmarshalling(Parcel &data)
         vibratorInfoIPC = nullptr;
         return vibratorInfoIPC;
     }
+    if (!data.ReadBool(vibratorInfoIPC->isSupportIntensity)) {
+        MISC_HILOGE("Read isSupportIntensity failed");
+        delete vibratorInfoIPC;
+        vibratorInfoIPC = nullptr;
+        return vibratorInfoIPC;
+    }
     return vibratorInfoIPC;
 }
 
@@ -515,6 +525,8 @@ void VibratorInfoIPC::Dump() const
     retStr += ("vibratorId: " + std::to_string(vibratorId) + " ");
     retStr += ("deviceName: " + deviceName + " ");
     retStr += ("isSupportHdHaptic: " + (isSupportHdHaptic? std::string("true"):std::string("false")) + " ");
+    retStr += ("isLocalVibrator: " + (isLocalVibrator? std::string("true"):std::string("false")) + " ");
+    retStr += ("isSupportIntensity: " + (isSupportIntensity? std::string("true"):std::string("false")) + " ");
     MISC_HILOGI("VibratorInfoIPC: [%{public}s]", retStr.c_str());
 }
 

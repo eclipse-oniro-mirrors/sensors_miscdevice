@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2022-2026 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -17,8 +17,14 @@
 #define VIBRATOR_INFOS_H
 
 #include "parcel.h"
+
 namespace OHOS {
 namespace Sensors {
+
+inline bool ResolveIsSupportIntensity(bool hdiIntensity, bool hdHaptic)
+{
+    return hdiIntensity || hdHaptic;
+}
 constexpr int32_t MAX_EVENT_SIZE = 16;
 constexpr int32_t MAX_POINT_SIZE = 16;
 const std::string VIBRATE_BUTT = "butt";
@@ -149,6 +155,7 @@ struct VibratorInfoIPC : public Parcelable {
     std::string deviceName = "";
     bool isSupportHdHaptic;
     bool isLocalVibrator;
+    bool isSupportIntensity = false;
     int32_t position = 0;
     void Dump() const;
     bool Marshalling(Parcel &parcel) const;

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2026 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -1685,11 +1685,14 @@ void MiscdeviceService::ConvertToServerInfos(const std::vector<HdfVibratorInfo> 
         vibratorInfo.vibratorId = infos.vibratorId;
         vibratorInfo.deviceName = info.deviceName;
         vibratorInfo.isSupportHdHaptic = vibratorCapacity.isSupportHdHaptic;
+        vibratorInfo.isSupportIntensity = ResolveIsSupportIntensity(
+            infos.isSupportIntensity, vibratorCapacity.isSupportHdHaptic);
         vibratorInfo.isLocalVibrator = infos.isLocal;
         vibratorAllInfos.baseInfo.emplace_back(vibratorInfo);
         MISC_HILOGI("HDI::HdfVibratorInfo deviceName:%{public}s, deviceId:%{public}d, vibratorId:%{public}d,"
-            " isLocalVibrator:%{public}d", info.deviceName.c_str(), vibratorInfo.deviceId, vibratorInfo.vibratorId,
-            vibratorInfo.isLocalVibrator);
+            " isSupportIntensity:%{public}d, isLocalVibrator:%{public}d", info.deviceName.c_str(),
+            vibratorInfo.deviceId, vibratorInfo.vibratorId,
+            vibratorInfo.isSupportIntensity, vibratorInfo.isLocalVibrator);
     }
     vibratorAllInfos.capacityInfo = vibratorCapacity;
     vibratorAllInfos.waveInfo = waveInfomation;

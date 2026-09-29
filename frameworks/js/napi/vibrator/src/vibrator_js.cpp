@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2022 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2026 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -1099,12 +1099,22 @@ static napi_value CreateEnumHapticFeedback(const napi_env env, napi_value export
     napi_value effectNoticeSuccess = nullptr;
     napi_value effectNoticeFail = nullptr;
     napi_value effectNoticeWarning = nullptr;
+    napi_value effectImeStrength1 = nullptr;
+    napi_value effectImeStrength2 = nullptr;
+    napi_value effectImeStrength3 = nullptr;
+    napi_value effectImeStrength4 = nullptr;
+    napi_value effectImeStrength5 = nullptr;
     MISC_CALL(napi_create_string_utf8(env, "haptic.effect.soft", NAPI_AUTO_LENGTH, &effectSoft));
     MISC_CALL(napi_create_string_utf8(env, "haptic.effect.hard", NAPI_AUTO_LENGTH, &effectHard));
     MISC_CALL(napi_create_string_utf8(env, "haptic.effect.sharp", NAPI_AUTO_LENGTH, &effectSharp));
     MISC_CALL(napi_create_string_utf8(env, "haptic.notice.success", NAPI_AUTO_LENGTH, &effectNoticeSuccess));
     MISC_CALL(napi_create_string_utf8(env, "haptic.notice.fail", NAPI_AUTO_LENGTH, &effectNoticeFail));
     MISC_CALL(napi_create_string_utf8(env, "haptic.notice.warning", NAPI_AUTO_LENGTH, &effectNoticeWarning));
+    MISC_CALL(napi_create_string_utf8(env, "haptic.grade.normal.strength1", NAPI_AUTO_LENGTH, &effectImeStrength1));
+    MISC_CALL(napi_create_string_utf8(env, "haptic.grade.normal.strength2", NAPI_AUTO_LENGTH, &effectImeStrength2));
+    MISC_CALL(napi_create_string_utf8(env, "haptic.grade.normal.strength3", NAPI_AUTO_LENGTH, &effectImeStrength3));
+    MISC_CALL(napi_create_string_utf8(env, "haptic.grade.normal.strength4", NAPI_AUTO_LENGTH, &effectImeStrength4));
+    MISC_CALL(napi_create_string_utf8(env, "haptic.grade.normal.strength5", NAPI_AUTO_LENGTH, &effectImeStrength5));
 
     napi_property_descriptor desc[] = {
         DECLARE_NAPI_STATIC_PROPERTY("EFFECT_SOFT", effectSoft),
@@ -1113,6 +1123,11 @@ static napi_value CreateEnumHapticFeedback(const napi_env env, napi_value export
         DECLARE_NAPI_STATIC_PROPERTY("EFFECT_NOTICE_SUCCESS", effectNoticeSuccess),
         DECLARE_NAPI_STATIC_PROPERTY("EFFECT_NOTICE_FAILURE", effectNoticeFail),
         DECLARE_NAPI_STATIC_PROPERTY("EFFECT_NOTICE_WARNING", effectNoticeWarning),
+        DECLARE_NAPI_STATIC_PROPERTY("EFFECT_IME_STRENGTH1", effectImeStrength1),
+        DECLARE_NAPI_STATIC_PROPERTY("EFFECT_IME_STRENGTH2", effectImeStrength2),
+        DECLARE_NAPI_STATIC_PROPERTY("EFFECT_IME_STRENGTH3", effectImeStrength3),
+        DECLARE_NAPI_STATIC_PROPERTY("EFFECT_IME_STRENGTH4", effectImeStrength4),
+        DECLARE_NAPI_STATIC_PROPERTY("EFFECT_IME_STRENGTH5", effectImeStrength5),
     };
     napi_value result = nullptr;
     MISC_CALL(napi_define_class(env, "HapticFeedback", NAPI_AUTO_LENGTH, EnumClassConstructor, nullptr,
