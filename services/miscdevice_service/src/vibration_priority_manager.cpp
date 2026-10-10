@@ -71,7 +71,7 @@ const std::string SETTING_VIBRATE_INTENSITY_KEY = "vibration_intensity_index";
 constexpr int32_t DECEM_BASE = 10;
 }  // namespace
 
-std::atomic_bool VibrationPriorityManager::isVibratorMute_ = false;
+std::atomic_int32_t VibrationPriorityManager::vibratorMuteMode_ = VIBRATOR_MUTE_OFF;
 
 VibrationPriorityManager::VibrationPriorityManager() {}
 
@@ -905,10 +905,11 @@ VibrateStatus VibrationPriorityManager::ShouldIgnoreVibrate(const VibrateInfo &v
     const std::shared_ptr<VibratorThread> &vibratorThread, const VibratorIdentifierIPC& identifier)
 {
     UpdateStatus();
-    if ((vibrateInfo.usage == USAGE_ALARM || vibrateInfo.usage == USAGE_RING
-        || vibrateInfo.usage == USAGE_NOTIFICATION || vibrateInfo.usage == USAGE_COMMUNICATION)
-        && (isVibratorMute_.load())) {
-        MISC_HILOGD("Vibration is ignored for vibrator mute");
+    int32_t muteMode = vibratorMuteMode_.load();
+    if ((muteMode == VIBRATOR_MUTE_ALL) || ((vibrateInfo.usage == USAGE_ALARM
+        || vibrateInfo.usage == USAGE_RING || vibrateInfo.usage == USAGE_NOTIFICATION
+        || vibrateInfo.usage == USAGE_COMMUNICATION) && (muteMode == VIBRATOR_MUTE_LONG))) {
+        MISC_HILOGD("Vibration is ignored for vibrator mute, muteMode:%{public}d", muteMode);
         return IGNORE_VIBRATOR_MUTE;
     }
     if (!IsSystemCalling() || vibrateInfo.systemUsage == false) {
@@ -1134,9 +1135,9 @@ int32_t VibrationPriorityManager::UnregisterObserver(const sptr<MiscDeviceObserv
     return ERR_OK;
 }
 
-void VibrationPriorityManager::SetIgnoreSwitchStatus(bool status)
+void VibrationPriorityManager::SetIgnoreSwitchStatus(int32_t muteMode)
 {
-    isVibratorMute_.store(status);
+    vibratorMuteMode_.store(muteMode);
 }
 }  // namespace Sensors
 }  // namespace OHOS

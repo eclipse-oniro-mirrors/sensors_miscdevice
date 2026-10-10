@@ -81,6 +81,19 @@ constexpr int32_t SHORT_VIBRATOR_DURATION = 50;
 #endif // OHOS_BUILD_ENABLE_VIBRATOR_PRESET_INFO
 constexpr int32_t LOG_COUNT_FIVE = 5;
 const inline char *DEVICE_MUTE_FLAG = "vendor.device.vibrator.mute";
+#ifdef OHOS_BUILD_ENABLE_VIBRATOR_CUSTOM
+const inline char *DEVICE_MUTE_ALL = "all";
+
+int32_t ParseDeviceMuteMode()
+{
+    std::string value = OHOS::system::GetParameter(DEVICE_MUTE_FLAG, "");
+    if (value == DEVICE_MUTE_ALL) {
+        return VIBRATOR_MUTE_ALL;
+    }
+    return OHOS::system::GetBoolParameter(DEVICE_MUTE_FLAG, false)
+        ? VIBRATOR_MUTE_LONG : VIBRATOR_MUTE_OFF;
+}
+#endif // OHOS_BUILD_ENABLE_VIBRATOR_CUSTOM
 }  // namespace
 
 std::atomic_int32_t MiscdeviceService::timeModeCallTimes_ = 0;
@@ -96,7 +109,7 @@ std::map<int32_t, VibratorAllInfos> MiscdeviceService::devicesManageMap_;
 std::mutex MiscdeviceService::devicesManageMutex_;
 std::map<sptr<IRemoteObject>, int32_t> MiscdeviceService::clientPidMap_;
 std::mutex MiscdeviceService::clientPidMapMutex_;
-std::atomic_bool MiscdeviceService::deviceMute_ = false;
+std::atomic_int32_t MiscdeviceService::deviceMuteMode_ = VIBRATOR_MUTE_OFF;
 
 MiscdeviceService::MiscdeviceService()
     : SystemAbility(MISCDEVICE_SERVICE_ABILITY_ID, true),
@@ -695,9 +708,10 @@ void MiscdeviceService::ParameterCallback(const char *key, const char *value, vo
         MISC_HILOGE("ParameterCallback return invalid param");
         return;
     }
-    deviceMute_.store(OHOS::system::GetBoolParameter(DEVICE_MUTE_FLAG, false));
-    PriorityManager->SetIgnoreSwitchStatus(deviceMute_.load());
-    if (deviceMute_.load()) {
+    int32_t muteMode = ParseDeviceMuteMode();
+    deviceMuteMode_.store(muteMode);
+    PriorityManager->SetIgnoreSwitchStatus(muteMode);
+    if (muteMode != VIBRATOR_MUTE_OFF) {
         VibratorIdentifierIPC identifier;
         identifier.deviceId = -1;
         identifier.vibratorId = -1;
@@ -707,14 +721,15 @@ void MiscdeviceService::ParameterCallback(const char *key, const char *value, vo
             MISC_HILOGE("StopVibrator failed,ret:%{public}d", ret);
         }
     }
-    MISC_HILOGI("deviceMute is %{public}d", deviceMute_.load());
+    MISC_HILOGI("deviceMuteMode is %{public}d", muteMode);
 }
 
 void MiscdeviceService::RegisterDeviceMuteObserver()
 {
     CALL_LOG_ENTER;
-    deviceMute_.store(OHOS::system::GetBoolParameter(DEVICE_MUTE_FLAG, false));
-    PriorityManager->SetIgnoreSwitchStatus(deviceMute_.load());
+    int32_t muteMode = ParseDeviceMuteMode();
+    deviceMuteMode_.store(muteMode);
+    PriorityManager->SetIgnoreSwitchStatus(muteMode);
     int32_t ret = WatchParameter(DEVICE_MUTE_FLAG, ParameterCallback, this);
     if (ret != SUCCESS) {
         MISC_HILOGE("WatchParameter fail");
