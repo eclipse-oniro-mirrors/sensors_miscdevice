@@ -24,6 +24,7 @@
 
 #include "sensors_errors.h"
 #include "vibration_priority_manager.h"
+#include "vibrator_infos.h"
 
 #undef LOG_TAG
 #define LOG_TAG "VibrationPriorityManagerTest"
@@ -58,6 +59,7 @@ void VibrationPriorityManagerTest::SetUp()
 
 void VibrationPriorityManagerTest::TearDown()
 {
+    PRIORITY_MANAGER->SetIgnoreSwitchStatus(VIBRATOR_MUTE_OFF);
 }
 
 HWTEST_F(VibrationPriorityManagerTest, InitVibrateWhenRing_001, TestSize.Level1)
@@ -79,6 +81,52 @@ HWTEST_F(VibrationPriorityManagerTest, UnregisterUser100ObserverTest_001, TestSi
     MISC_HILOGI("UnregisterUser100ObserverTest_001 in");
     ASSERT_NO_FATAL_FAILURE(PRIORITY_MANAGER->UnregisterUser100Observer());
     MISC_HILOGI("UnregisterUser100ObserverTest_001 out");
+}
+
+HWTEST_F(VibrationPriorityManagerTest, SetIgnoreSwitchStatus_001, TestSize.Level1)
+{
+    MISC_HILOGI("SetIgnoreSwitchStatus_001 in");
+    PRIORITY_MANAGER->SetIgnoreSwitchStatus(VIBRATOR_MUTE_ALL);
+    VibrateInfo info;
+    info.usage = USAGE_TOUCH;
+    VibratorIdentifierIPC identifier;
+    ASSERT_EQ(PRIORITY_MANAGER->ShouldIgnoreVibrate(info, nullptr, identifier), IGNORE_VIBRATOR_MUTE);
+    info.usage = USAGE_ALARM;
+    ASSERT_EQ(PRIORITY_MANAGER->ShouldIgnoreVibrate(info, nullptr, identifier), IGNORE_VIBRATOR_MUTE);
+    MISC_HILOGI("SetIgnoreSwitchStatus_001 out");
+}
+
+HWTEST_F(VibrationPriorityManagerTest, SetIgnoreSwitchStatus_002, TestSize.Level1)
+{
+    MISC_HILOGI("SetIgnoreSwitchStatus_002 in");
+    PRIORITY_MANAGER->SetIgnoreSwitchStatus(VIBRATOR_MUTE_LONG);
+    VibrateInfo info;
+    info.usage = USAGE_ALARM;
+    VibratorIdentifierIPC identifier;
+    ASSERT_EQ(PRIORITY_MANAGER->ShouldIgnoreVibrate(info, nullptr, identifier), IGNORE_VIBRATOR_MUTE);
+    MISC_HILOGI("SetIgnoreSwitchStatus_002 out");
+}
+
+HWTEST_F(VibrationPriorityManagerTest, SetIgnoreSwitchStatus_003, TestSize.Level1)
+{
+    MISC_HILOGI("SetIgnoreSwitchStatus_003 in");
+    PRIORITY_MANAGER->SetIgnoreSwitchStatus(VIBRATOR_MUTE_LONG);
+    VibrateInfo info;
+    info.usage = USAGE_TOUCH;
+    VibratorIdentifierIPC identifier;
+    ASSERT_EQ(PRIORITY_MANAGER->ShouldIgnoreVibrate(info, nullptr, identifier), VIBRATION);
+    MISC_HILOGI("SetIgnoreSwitchStatus_003 out");
+}
+
+HWTEST_F(VibrationPriorityManagerTest, SetIgnoreSwitchStatus_004, TestSize.Level1)
+{
+    MISC_HILOGI("SetIgnoreSwitchStatus_004 in");
+    PRIORITY_MANAGER->SetIgnoreSwitchStatus(VIBRATOR_MUTE_OFF);
+    VibrateInfo info;
+    info.usage = USAGE_ALARM;
+    VibratorIdentifierIPC identifier;
+    ASSERT_EQ(PRIORITY_MANAGER->ShouldIgnoreVibrate(info, nullptr, identifier), VIBRATION);
+    MISC_HILOGI("SetIgnoreSwitchStatus_004 out");
 }
 } // namespace Sensors
 } // namespace OHOS

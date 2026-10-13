@@ -208,7 +208,7 @@ private:
     int32_t invalidVibratorIdCount_ = 0;
     std::vector<int32_t> disablePids_;
     std::mutex pidMutex_;
-    static std::atomic_bool deviceMute_;
+    static std::atomic_int32_t deviceMuteMode_;
     std::once_flag isRegistered_;
 };
 }  // namespace Sensors
