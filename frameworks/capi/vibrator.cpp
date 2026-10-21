@@ -24,9 +24,13 @@
 #undef LOG_TAG
 #define LOG_TAG "Vibrator"
 
+namespace {
+const int32_t PLAY_VIBRATION_DURATION_MAX = 60000;
+}
+
 int32_t OH_Vibrator_PlayVibration(int32_t duration, Vibrator_Attribute vibrateAttribute)
 {
-    if (duration <= 0) {
+    if (duration <= 0 || duration > PLAY_VIBRATION_DURATION_MAX) {
         MISC_HILOGE("duration is invalid, duration is %{public}d", duration);
         return PARAMETER_ERROR;
     }

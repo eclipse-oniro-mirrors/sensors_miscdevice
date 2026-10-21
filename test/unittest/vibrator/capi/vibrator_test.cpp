@@ -149,6 +149,22 @@ HWTEST_F(NativeVibratorTest, OH_Vibrator_PlayVibrationTest_003, TestSize.Level1)
     ASSERT_EQ(ret, PARAMETER_ERROR);
 }
 
+HWTEST_F(NativeVibratorTest, OH_Vibrator_PlayVibrationTest_004, TestSize.Level1)
+{
+    CALL_LOG_ENTER;
+    Vibrator_Attribute vibrateAttribute = {
+        .usage = VIBRATOR_USAGE_COMMUNICATION
+    };
+    uint32_t duration = 60001;
+    int32_t ret = OH_Vibrator_PlayVibration(duration, vibrateAttribute);
+    ASSERT_EQ(ret, PARAMETER_ERROR);
+    duration = 60000;
+    ret = OH_Vibrator_PlayVibration(duration, vibrateAttribute);
+    ASSERT_EQ(ret, RET_SUCCESS);
+    ret = OH_Vibrator_Cancel();
+    ASSERT_EQ(ret, RET_SUCCESS);
+}
+
 HWTEST_F(NativeVibratorTest, OH_Vibrator_CancelTest_002, TestSize.Level1)
 {
     CALL_LOG_ENTER;
