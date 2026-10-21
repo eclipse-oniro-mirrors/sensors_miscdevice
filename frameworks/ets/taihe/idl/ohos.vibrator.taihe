@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2025 Huawei Device Co., Ltd.
+ * Copyright (c) 2025-2026 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -286,7 +286,42 @@ enum HapticFeedback: String {
    * @syscap SystemCapability.Sensors.MiscDevice
    * @since 18
    */
-  EFFECT_NOTICE_WARNING = "haptic.notice.warning"
+  EFFECT_NOTICE_WARNING = "haptic.notice.warning",
+  /**
+   * IME haptic grade, strength 1.
+   *
+   * @syscap SystemCapability.Sensors.MiscDevice
+   * @since 26.2.0
+   */
+  EFFECT_IME_STRENGTH1 = "haptic.grade.normal.strength1",
+  /**
+   * IME haptic grade, strength 2.
+   *
+   * @syscap SystemCapability.Sensors.MiscDevice
+   * @since 26.2.0
+   */
+  EFFECT_IME_STRENGTH2 = "haptic.grade.normal.strength2",
+  /**
+   * IME haptic grade, strength 3.
+   *
+   * @syscap SystemCapability.Sensors.MiscDevice
+   * @since 26.2.0
+   */
+  EFFECT_IME_STRENGTH3 = "haptic.grade.normal.strength3",
+  /**
+   * IME haptic grade, strength 4.
+   *
+   * @syscap SystemCapability.Sensors.MiscDevice
+   * @since 26.2.0
+   */
+  EFFECT_IME_STRENGTH4 = "haptic.grade.normal.strength4",
+  /**
+   * IME haptic grade, strength 5.
+   *
+   * @syscap SystemCapability.Sensors.MiscDevice
+   * @since 26.2.0
+   */
+  EFFECT_IME_STRENGTH5 = "haptic.grade.normal.strength5"
 }
 
 /**
@@ -752,6 +787,14 @@ struct VibratorInfo {
      * @since 19
      */
     isHdHapticSupported: bool;
+    /**
+     * Indicates whether vibration intensity adjustment is supported.
+     *
+     * @type { bool }
+     * @syscap SystemCapability.Sensors.MiscDevice
+     * @since 26.2.0
+     */
+    isSupportIntensity: bool;
     /**
      * Indicates whether the vibrator is a local device or an external one.
      * If the value is true, it represents a local device; if false, it represents an external device.

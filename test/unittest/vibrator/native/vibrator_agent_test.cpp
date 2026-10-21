@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2026 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -2888,6 +2888,109 @@ HWTEST_F(VibratorAgentTest, GetEffectInfo_002, TestSize.Level1)
     EffectInfo result;
     int32_t ret = GetEffectInfo(identifier, effectType, result);
     ASSERT_EQ(ret, OHOS::Sensors::SUCCESS);
+}
+
+HWTEST_F(VibratorAgentTest, GetVibratorIdList_IsSupportIntensity_001, TestSize.Level1)
+{
+    MISC_HILOGI("GetVibratorIdList_IsSupportIntensity_001 in");
+    VibratorIdentifier identifier;
+    std::vector<VibratorInfos> result;
+    int32_t ret = GetVibratorList(identifier, result);
+    ASSERT_EQ(ret, OHOS::Sensors::SUCCESS);
+    if (result.empty()) {
+        GTEST_SKIP() << "no vibrator on this device";
+    }
+    for (const auto &info : result) {
+        if (info.isSupportHdHaptic) {
+            ASSERT_TRUE(info.isSupportIntensity);
+        }
+    }
+}
+
+HWTEST_F(VibratorAgentTest, ResolveIsSupportIntensity_001, TestSize.Level1)
+{
+    ASSERT_TRUE(ResolveIsSupportIntensity(true, false));
+    ASSERT_TRUE(ResolveIsSupportIntensity(false, true));
+    ASSERT_TRUE(ResolveIsSupportIntensity(true, true));
+    ASSERT_FALSE(ResolveIsSupportIntensity(false, false));
+}
+
+HWTEST_F(VibratorAgentTest, VibratorInfoIPC_Parcel_IsSupportIntensity_001, TestSize.Level1)
+{
+    VibratorInfoIPC in;
+    in.deviceId = 1;
+    in.vibratorId = 2;
+    in.deviceName = "mock";
+    in.isSupportHdHaptic = false;
+    in.isLocalVibrator = true;
+    in.isSupportIntensity = true;
+    Parcel parcel;
+    ASSERT_TRUE(in.Marshalling(parcel));
+    VibratorInfoIPC *out = VibratorInfoIPC::Unmarshalling(parcel);
+    ASSERT_NE(out, nullptr);
+    EXPECT_EQ(out->deviceId, 1);
+    EXPECT_EQ(out->vibratorId, 2);
+    EXPECT_EQ(out->deviceName, "mock");
+    EXPECT_FALSE(out->isSupportHdHaptic);
+    EXPECT_TRUE(out->isLocalVibrator);
+    EXPECT_TRUE(out->isSupportIntensity);
+    delete out;
+}
+
+HWTEST_F(VibratorAgentTest, IsSupportEffect_IME_001, TestSize.Level1)
+{
+    const char *ids[] = {
+        "haptic.grade.normal.strength1",
+        "haptic.grade.normal.strength2",
+        "haptic.grade.normal.strength3",
+        "haptic.grade.normal.strength4",
+        "haptic.grade.normal.strength5",
+    };
+    for (const char *id : ids) {
+        bool state = false;
+        int32_t ret = IsSupportEffect(id, &state);
+        ASSERT_EQ(ret, 0) << id;
+        (void)state;
+    }
+}
+
+HWTEST_F(VibratorAgentTest, VibratorInfoIPC_Parcel_TruncatedTail_002, TestSize.Level1)
+{
+    // Wire contract: isSupportIntensity is a strict tail field; a parcel that
+    // stops before it must be rejected instead of silently defaulting.
+    Parcel parcel;
+    ASSERT_TRUE(parcel.WriteInt32(1));
+    ASSERT_TRUE(parcel.WriteInt32(2));
+    ASSERT_TRUE(parcel.WriteString("mock"));
+    ASSERT_TRUE(parcel.WriteBool(false));
+    ASSERT_TRUE(parcel.WriteBool(true));
+    VibratorInfoIPC *out = VibratorInfoIPC::Unmarshalling(parcel);
+    ASSERT_EQ(out, nullptr);
+}
+
+HWTEST_F(VibratorAgentTest, IsSupportEffect_InvalidParam_002, TestSize.Level1)
+{
+    bool state = true;
+    ASSERT_EQ(IsSupportEffect(nullptr, &state), PARAMETER_ERROR);
+    ASSERT_TRUE(state);
+    ASSERT_EQ(IsSupportEffect("haptic.grade.normal.strength1", nullptr), PARAMETER_ERROR);
+}
+
+HWTEST_F(VibratorAgentTest, IsSupportEffect_OutOfRange_003, TestSize.Level1)
+{
+    const char *ids[] = {
+        "haptic.grade.normal.strength0",
+        "haptic.grade.normal.strength6",
+        "haptic.grade.normal.unknown",
+    };
+    for (const char *id : ids) {
+        bool state = true;
+        int32_t ret = IsSupportEffect(id, &state);
+        if (ret != SUCCESS) {
+            GTEST_SKIP() << "effect query unavailable on this device";
+        }
+        EXPECT_FALSE(state) << id;
+    }
 }
 
 HWTEST_F(VibratorAgentTest, SubscribeVibrator_001, TestSize.Level1)

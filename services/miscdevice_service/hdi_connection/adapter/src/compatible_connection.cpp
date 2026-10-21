@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2026 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -40,7 +40,12 @@ std::unordered_map<std::string, int32_t> g_vibratorEffect = {
     {"haptic.effect.sharp", 20},
     {"haptic.notice.success", 139},
     {"haptic.notice.fail", 277},
-    {"haptic.notice.warning", 2200}
+    {"haptic.notice.warning", 2200},
+    {"haptic.grade.normal.strength1", 20},
+    {"haptic.grade.normal.strength2", 40},
+    {"haptic.grade.normal.strength3", 60},
+    {"haptic.grade.normal.strength4", 80},
+    {"haptic.grade.normal.strength5", 100}
 };
 #ifdef HDF_DRIVERS_INTERFACE_VIBRATOR
 HdfVibratorMode g_vibrateMode;
