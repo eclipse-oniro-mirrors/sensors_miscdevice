@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2026 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -40,12 +40,21 @@ std::unordered_map<std::string, int32_t> g_vibratorEffect = {
     {"haptic.effect.sharp", 20},
     {"haptic.notice.success", 139},
     {"haptic.notice.fail", 277},
-    {"haptic.notice.warning", 2200}
+    {"haptic.notice.warning", 2200},
+    {"haptic.grade.normal.strength1", 20},
+    {"haptic.grade.normal.strength2", 40},
+    {"haptic.grade.normal.strength3", 60},
+    {"haptic.grade.normal.strength4", 80},
+    {"haptic.grade.normal.strength5", 100}
 };
 #ifdef HDF_DRIVERS_INTERFACE_VIBRATOR
 HdfVibratorMode g_vibrateMode;
 #endif // HDF_DRIVERS_INTERFACE_VIBRATOR
 constexpr int32_t VIBRATE_DELAY_TIME = 10;
+constexpr int32_t MOCK_DEVICE_ID = -1;
+constexpr int32_t MOCK_VIBRATOR_ID = 1;
+constexpr int32_t MOCK_VIBRATOR_POSITION = 0;
+constexpr int32_t MOCK_VIBRATOR_IS_LOCAL = 1;
 } // namespace
 std::atomic_int32_t CompatibleConnection::duration_ = 0;
 std::atomic_bool CompatibleConnection::isStop_ = true;
@@ -239,6 +248,20 @@ int32_t CompatibleConnection::StartByIntensity(const VibratorIdentifierIPC &iden
 #ifdef HDF_DRIVERS_INTERFACE_VIBRATOR
 int32_t CompatibleConnection::GetVibratorInfo(std::vector<HdfVibratorInfo> &hdfVibratorInfo)
 {
+    CALL_LOG_ENTER;
+    HdfVibratorInfo vibratorInfo;
+    vibratorInfo.isSupportIntensity = false;
+    vibratorInfo.isSupportFrequency = false;
+    vibratorInfo.isSupportHdHaptic = false;
+    vibratorInfo.intensityMaxValue = 0;
+    vibratorInfo.intensityMinValue = 0;
+    vibratorInfo.frequencyMaxValue = 0;
+    vibratorInfo.frequencyMinValue = 0;
+    vibratorInfo.deviceId = MOCK_DEVICE_ID;
+    vibratorInfo.vibratorId = MOCK_VIBRATOR_ID;
+    vibratorInfo.position = MOCK_VIBRATOR_POSITION;
+    vibratorInfo.isLocal = MOCK_VIBRATOR_IS_LOCAL;
+    hdfVibratorInfo.push_back(vibratorInfo);
     return ERR_OK;
 }
 int32_t CompatibleConnection::GetAllWaveInfo(const VibratorIdentifierIPC &identifier,

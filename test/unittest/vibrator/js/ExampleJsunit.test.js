@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021-2022 Huawei Device Co., Ltd.
+ * Copyright (C) 2021-2026 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -3518,7 +3518,6 @@ describe("VibratorJsTest", function () {
                 console.info("startVibration success");
                 expect(true).assertTrue();
             }
-            done();
         });
         try {
             vibrator.stopVibrationSync();
@@ -3557,7 +3556,7 @@ describe("VibratorJsTest", function () {
      * @tc.require: I53SGE
      * @tc.number: VibrateJsTest052
      */
-    it("VibrateJsTest052", 0, async function () {
+    it("VibrateJsTest052", 0, async function (done) {
         let ret = vibrator.isSupportEffectSync("haptic.notice.success");
         if (ret) {
             vibrator.startVibration({
@@ -3582,6 +3581,7 @@ describe("VibratorJsTest", function () {
         } else {
             console.info('This device is not supportEffect');
             expect(true).assertTrue();
+            done();
         }
     })
 
@@ -3592,7 +3592,7 @@ describe("VibratorJsTest", function () {
      * @tc.require: I53SGE
      * @tc.number: VibrateJsTest053
      */
-    it("VibrateJsTest053", 0, async function () {
+    it("VibrateJsTest053", 0, async function (done) {
         let ret = vibrator.isSupportEffectSync("haptic.notice.fail");
         if (ret) {
             vibrator.startVibration({
@@ -3617,6 +3617,7 @@ describe("VibratorJsTest", function () {
         } else {
             console.info('This device is not supportEffect');
             expect(true).assertTrue();
+            done();
         }
     })
 
@@ -3627,7 +3628,7 @@ describe("VibratorJsTest", function () {
      * @tc.require: I53SGE
      * @tc.number: VibrateJsTest054
      */
-    it("VibrateJsTest054", 0, async function () {
+    it("VibrateJsTest054", 0, async function (done) {
         let ret = vibrator.isSupportEffectSync("haptic.notice.warning");
         if (ret) {
             vibrator.startVibration({
@@ -3652,6 +3653,7 @@ describe("VibratorJsTest", function () {
         } else {
             console.info('This device is not supportEffect');
             expect(true).assertTrue();
+            done();
         }
     })
 
@@ -3663,8 +3665,8 @@ describe("VibratorJsTest", function () {
      * @tc.require: I53SGE
      * @tc.number: VibrateJsTest055
      */
-    it("VibrateJsTest055", 0, async function () {
-        await vibrator.startVibration({
+    it("VibrateJsTest055", 0, async function (done) {
+        vibrator.startVibration({
             type: "time",
             duration: 1000
         }, {
@@ -3691,8 +3693,8 @@ describe("VibratorJsTest", function () {
      * @tc.require: I53SGE
      * @tc.number: VibrateJsTest056
      */
-    it("VibrateJsTest056", 0, async function () {
-        await vibrator.startVibration({
+    it("VibrateJsTest056", 0, async function (done) {
+        vibrator.startVibration({
             type: "time",
             duration: 1000
         }, {
@@ -3719,8 +3721,8 @@ describe("VibratorJsTest", function () {
      * @tc.require: I53SGE
      * @tc.number: VibrateJsTest057
      */
-    it("VibrateJsTest057", 0, async function () {
-        await vibrator.startVibration({
+    it("VibrateJsTest057", 0, async function (done) {
+        vibrator.startVibration({
             type: "time",
             duration: 1000
         }, {
@@ -3738,5 +3740,191 @@ describe("VibratorJsTest", function () {
                 done();
             }, 1000);
         });
+    })
+
+    /*
+     * @tc.name: VibratorJsTest058
+     * @tc.desc: getVibratorInfoSync returns isSupportIntensity boolean
+     * @tc.number: SUB_SensorSystem_Vibrator_JsTest_0580
+     */
+    it("VibratorJsTest058", 0, async function (done) {
+        try {
+            const vibrators = vibrator.getVibratorInfoSync();
+            expect(Array.isArray(vibrators)).assertEqual(true);
+            if (vibrators.length === 0) {
+                console.info('VibratorJsTest058 skip: no vibrator on this device');
+                done();
+                return;
+            }
+            for (let i = 0; i < vibrators.length; i++) {
+                expect(typeof vibrators[i].isSupportIntensity).assertEqual('boolean');
+                if (vibrators[i].isHdHapticSupported) {
+                    expect(vibrators[i].isSupportIntensity).assertEqual(true);
+                }
+            }
+            done();
+        } catch (error) {
+            console.error('VibratorJsTest058 failed with error:', error);
+            expect(false).assertTrue();
+            done();
+        }
+    })
+
+    /*
+     * @tc.name: VibratorJsTest059
+     * @tc.desc: HapticFeedback IME strength enum strings
+     * @tc.number: SUB_SensorSystem_Vibrator_JsTest_0590
+     */
+    it("VibratorJsTest059", 0, function (done) {
+        expect(vibrator.HapticFeedback.EFFECT_IME_STRENGTH1).assertEqual('haptic.grade.normal.strength1');
+        expect(vibrator.HapticFeedback.EFFECT_IME_STRENGTH2).assertEqual('haptic.grade.normal.strength2');
+        expect(vibrator.HapticFeedback.EFFECT_IME_STRENGTH3).assertEqual('haptic.grade.normal.strength3');
+        expect(vibrator.HapticFeedback.EFFECT_IME_STRENGTH4).assertEqual('haptic.grade.normal.strength4');
+        expect(vibrator.HapticFeedback.EFFECT_IME_STRENGTH5).assertEqual('haptic.grade.normal.strength5');
+        done();
+    })
+
+    /*
+     * @tc.name: VibratorJsTest060
+     * @tc.desc: isSupportEffectSync for IME strength effect ids
+     * @tc.number: SUB_SensorSystem_Vibrator_JsTest_0600
+     */
+    it("VibratorJsTest060", 0, function (done) {
+        const ids = [
+            vibrator.HapticFeedback.EFFECT_IME_STRENGTH1,
+            vibrator.HapticFeedback.EFFECT_IME_STRENGTH2,
+            vibrator.HapticFeedback.EFFECT_IME_STRENGTH3,
+            vibrator.HapticFeedback.EFFECT_IME_STRENGTH4,
+            vibrator.HapticFeedback.EFFECT_IME_STRENGTH5
+        ];
+        for (let i = 0; i < ids.length; i++) {
+            const ret = vibrator.isSupportEffectSync(ids[i]);
+            expect(typeof ret).assertEqual('boolean');
+        }
+        done();
+    })
+
+    /*
+     * @tc.name: VibratorJsTest061
+     * @tc.desc: startVibration with an IME strength preset is consistent with isSupportEffectSync
+     * @tc.number: SUB_SensorSystem_Vibrator_JsTest_0610
+     */
+    it("VibratorJsTest061", 0, function (done) {
+        let finished = false;
+        const timer = setTimeout(() => {
+            if (!finished) {
+                finished = true;
+                console.error('VibratorJsTest061 callback timeout');
+                expect(false).assertTrue();
+                done();
+            }
+        }, 10000);
+        try {
+            const vibrators = vibrator.getVibratorInfoSync();
+            if (vibrators.length === 0) {
+                console.info('VibratorJsTest061 skip: no vibrator on this device');
+                clearTimeout(timer);
+                done();
+                return;
+            }
+            const effectId = vibrator.HapticFeedback.EFFECT_IME_STRENGTH3;
+            const supported = vibrator.isSupportEffectSync(effectId);
+            vibrator.startVibration({
+                type: "preset",
+                effectId: effectId,
+            }, {
+                usage: "touch"
+            }, (error) => {
+                if (finished) {
+                    return;
+                }
+                finished = true;
+                clearTimeout(timer);
+                try {
+                    if (error) {
+                        console.info("VibratorJsTest061 rejected: " + JSON.stringify(error));
+                        expect(supported).assertEqual(false);
+                        expect(error.code).assertEqual(OPERATION_FAIL_CODE);
+                    } else {
+                        console.info("VibratorJsTest061 resolved");
+                        expect(supported).assertEqual(true);
+                        vibrator.stopVibration(() => {});
+                    }
+                    done();
+                } catch (err) {
+                    console.error('VibratorJsTest061 assertion failed:', err);
+                    expect(false).assertTrue();
+                    done();
+                }
+            });
+        } catch (error) {
+            if (!finished) {
+                finished = true;
+                clearTimeout(timer);
+                console.error('VibratorJsTest061 failed with error:', error);
+                expect(false).assertTrue();
+                done();
+            }
+        }
+    })
+
+    /*
+     * @tc.name: VibratorJsTest062
+     * @tc.desc: startVibration with an out-of-range IME strength id rejects
+     * @tc.number: SUB_SensorSystem_Vibrator_JsTest_0620
+     */
+    it("VibratorJsTest062", 0, function (done) {
+        let finished = false;
+        const timer = setTimeout(() => {
+            if (!finished) {
+                finished = true;
+                console.error('VibratorJsTest062 callback timeout');
+                expect(false).assertTrue();
+                done();
+            }
+        }, 10000);
+        try {
+            const vibrators = vibrator.getVibratorInfoSync();
+            if (vibrators.length === 0) {
+                console.info('VibratorJsTest062 skip: no vibrator on this device');
+                clearTimeout(timer);
+                done();
+                return;
+            }
+            vibrator.startVibration({
+                type: "preset",
+                effectId: "haptic.grade.normal.strength9",
+            }, {
+                usage: "touch"
+            }, (error) => {
+                if (finished) {
+                    return;
+                }
+                finished = true;
+                clearTimeout(timer);
+                try {
+                    if (!error) {
+                        vibrator.stopVibration(() => {});
+                        expect(false).assertTrue();
+                    } else {
+                        console.info("VibratorJsTest062 rejected as expected: " + JSON.stringify(error));
+                        expect(error.code).assertEqual(OPERATION_FAIL_CODE);
+                    }
+                    done();
+                } catch (err) {
+                    console.error('VibratorJsTest062 assertion failed:', err);
+                    expect(false).assertTrue();
+                    done();
+                }
+            });
+        } catch (error) {
+            if (!finished) {
+                finished = true;
+                clearTimeout(timer);
+                console.error('VibratorJsTest062 failed with error:', error);
+                expect(false).assertTrue();
+                done();
+            }
+        }
     })
 })

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021-2024 Huawei Device Co., Ltd.
+ * Copyright (c) 2021-2026 Huawei Device Co., Ltd.
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -1391,6 +1391,7 @@ int32_t VibratorServiceClient::GetVibratorList(const VibratorIdentifier& identif
         resInfo.vibratorId = info.vibratorId;
         resInfo.deviceName = info.deviceName;
         resInfo.isSupportHdHaptic = info.isSupportHdHaptic;
+        resInfo.isSupportIntensity = info.isSupportIntensity;
         resInfo.isLocalVibrator = info.isLocalVibrator;
         vibratorInfo.push_back(resInfo);
     } // LCOV_EXCL_STOP
