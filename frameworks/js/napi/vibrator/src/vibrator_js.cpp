@@ -98,7 +98,6 @@ static napi_value EmitAsyncWork(napi_value param, sptr<AsyncCallbackInfo> info)
 
 static napi_value VibrateTime(napi_env env, napi_value args[], size_t argc)
 {
-    NAPI_ASSERT(env, (argc >= 1), "Wrong argument number");
     int32_t duration = 0;
     NAPI_ASSERT(env, GetInt32Value(env, args[0], duration), "Get int number fail");
     sptr<AsyncCallbackInfo> asyncCallbackInfo = new (std::nothrow) AsyncCallbackInfo(env);
@@ -112,7 +111,6 @@ static napi_value VibrateTime(napi_env env, napi_value args[], size_t argc)
 
 static napi_value VibrateEffectId(napi_env env, napi_value args[], size_t argc)
 {
-    NAPI_ASSERT(env, (argc >= 1), "Wrong argument number");
     string effectId;
     NAPI_ASSERT(env, GetStringValue(env, args[0], effectId), "Wrong argument type. String or function expected");
     sptr<AsyncCallbackInfo> asyncCallbackInfo = new (std::nothrow) AsyncCallbackInfo(env);

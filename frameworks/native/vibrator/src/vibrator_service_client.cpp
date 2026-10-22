@@ -313,11 +313,11 @@ bool VibratorServiceClient::IsHdHapticSupported(const VibratorIdentifier &identi
     int32_t ret = InitServiceClient();
     if (ret != ERR_OK) { // LCOV_EXCL_START
         MISC_HILOGE("InitServiceClient failed, ret:%{public}d", ret);
-        return MISC_NATIVE_GET_SERVICE_ERR;
+        return false;
     } // LCOV_EXCL_STOP
     VibratorCapacity capacity_;
     std::lock_guard<std::mutex> clientLock(clientMutex_);
-    CHKPR(miscdeviceProxy_, ERROR);
+    CHKPR(miscdeviceProxy_, false);
 #ifdef HIVIEWDFX_HITRACE_ENABLE
     StartTrace(HITRACE_TAG_SENSORS, "IsHdHapticSupported");
 #endif // HIVIEWDFX_HITRACE_ENABLE
@@ -810,7 +810,7 @@ bool VibratorServiceClient::IsSupportVibratorCustom(const VibratorIdentifier &id
     } // LCOV_EXCL_STOP
     VibratorCapacity capacity_;
     std::lock_guard<std::mutex> clientLock(clientMutex_);
-    CHKPR(miscdeviceProxy_, ERROR);
+    CHKPR(miscdeviceProxy_, false);
 #ifdef HIVIEWDFX_HITRACE_ENABLE
     StartTrace(HITRACE_TAG_SENSORS, "IsSupportVibratorCustom");
 #endif // HIVIEWDFX_HITRACE_ENABLE
@@ -913,7 +913,6 @@ bool VibratorServiceClient::HandleVibratorData(VibratorStatusEvent statusEvent) 
             }
         } // LCOV_EXCL_STOP
     }
-    std::lock_guard<std::recursive_mutex> subscribeLock(subscribeMutex_);
     auto callbacks = GetSubscribeUserCallback(statusEvent.deviceId);
     MISC_HILOGD("callbacks.size() = %{public}zu", callbacks.size());
     MISC_HILOGD("VibratorStatusEvent = [type = %{public}d, deviceId = %{public}d]",
