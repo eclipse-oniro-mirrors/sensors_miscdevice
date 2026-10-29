@@ -790,11 +790,11 @@ struct VibratorInfo {
     /**
      * Indicates whether vibration intensity adjustment is supported.
      *
-     * @type { bool }
+     * @type { ?bool }
      * @syscap SystemCapability.Sensors.MiscDevice
      * @since 26.2.0
      */
-    isSupportIntensity: bool;
+    isSupportIntensity: Optional<bool>;
     /**
      * Indicates whether the vibrator is a local device or an external one.
      * If the value is true, it represents a local device; if false, it represents an external device.

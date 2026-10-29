@@ -531,7 +531,7 @@ taihe::array<ohos::vibrator::VibratorInfo> getVibratorInfoSync(
                 .vibratorId = info.vibratorId,
                 .deviceName = taihe::string(info.deviceName),
                 .isHdHapticSupported = info.isSupportHdHaptic,
-                .isSupportIntensity = info.isSupportIntensity,
+                .isSupportIntensity = taihe::optional<bool>(std::in_place_t{}, info.isSupportIntensity),
                 .isLocalVibrator = info.isLocalVibrator
             };
             taiheVibratorInfo.push_back(taiheInfo);
