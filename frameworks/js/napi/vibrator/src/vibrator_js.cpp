@@ -223,6 +223,10 @@ static bool ParseVibrateEvent(napi_env env, napi_value eventArray, int32_t index
     CHKCF(IsMatchType(env, element, napi_object), "Wrong argument type, napi_object or function expected");
     int32_t type = 0;
     CHKCF(GetPropertyInt32(env, element, "eventType", type), "Get type fail");
+    if ((type != EVENT_TYPE_CONTINUOUS) && (type != EVENT_TYPE_TRANSIENT)) {
+        MISC_HILOGE("Invalid eventType, type:%{public}d", type);
+        return false;
+    }
     event.type = static_cast<VibratorEventType>(type);
     CHKCF(GetPropertyInt32(env, element, "time", event.time), "Get time fail");
     CHKCF(GetPropertyInt32(env, element, "duration", event.duration), "Get duration fail");

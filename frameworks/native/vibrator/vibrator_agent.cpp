@@ -86,11 +86,9 @@ int32_t StartVibratorEnhanced(const VibratorIdentifier identifier, const char *e
     MISC_HILOGD("Time delay measurement:start time");
     CHKPR(effectId, PARAMETER_ERROR);
     auto &client = VibratorServiceClient::GetInstance();
-    VibratorEffectParameter vibratorEffectParameter = client.GetVibratorEffectParameter(identifier);
+    VibratorEffectParameter vibratorEffectParameter = client.ConsumeVibratorEffectParameter(identifier, true);
     int32_t ret = client.Vibrate(identifier, effectId, vibratorEffectParameter.loopCount,
         vibratorEffectParameter.usage, vibratorEffectParameter.systemUsage);
-    client.SetUsage(identifier, USAGE_UNKNOWN, false);
-    client.SetLoopCount(identifier, 1);
     if (ret != ERR_OK) {
         MISC_HILOGE("Vibrate effectId failed, ret:%{public}d", ret);
         return NormalizeErrCode(ret);
@@ -114,10 +112,9 @@ int32_t StartVibratorOnceEnhanced(const VibratorIdentifier identifier, int32_t d
         return PARAMETER_ERROR;
     }
     auto &client = VibratorServiceClient::GetInstance();
-    VibratorEffectParameter vibratorEffectParameter = client.GetVibratorEffectParameter(identifier);
+    VibratorEffectParameter vibratorEffectParameter = client.ConsumeVibratorEffectParameter(identifier, false);
     int32_t ret = client.Vibrate(identifier, duration, vibratorEffectParameter.usage,
         vibratorEffectParameter.systemUsage);
-    client.SetUsage(identifier, USAGE_UNKNOWN, false);
     if (ret != ERR_OK) {
         MISC_HILOGE("Vibrate duration failed, ret:%{public}d", ret);
         return NormalizeErrCode(ret);

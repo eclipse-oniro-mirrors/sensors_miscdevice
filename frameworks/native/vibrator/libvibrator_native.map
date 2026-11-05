@@ -64,6 +64,7 @@
             "OHOS::Sensors::VibratorServiceClient::SubscribeVibratorPlugInfo(VibratorUser const*)";
             "OHOS::Sensors::VibratorServiceClient::ConvertSeekVibratorPackage(VibratorPackage const&, OHOS::Sensors::VibratePackage&, int)";
             "OHOS::Sensors::VibratorServiceClient::GetVibratorEffectParameter(VibratorIdentifier const&)";
+            "OHOS::Sensors::VibratorServiceClient::ConsumeVibratorEffectParameter(VibratorIdentifier const&, bool)";
             "OHOS::Sensors::VibratorServiceClient::TransferClientRemoteObject()";
             "OHOS::Sensors::VibratorServiceClient::WriteVibratorHiSysIPCEvent(OHOS::Sensors::IMiscdeviceServiceIpcCode, int)";
             "OHOS::Sensors::VibratorServiceClient::GetCurveListAfterModulation(std::__h::vector<OHOS::Sensors::VibratorCurveInterval, std::__h::allocator<OHOS::Sensors::VibratorCurveInterval>> const&, VibratorEvent const&, int)";
