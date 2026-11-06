@@ -39,10 +39,13 @@ constexpr uint32_t MAX_LIGHT_LIST_SIZE = 0X00ff;
 LightClient::~LightClient()
 {
     CALL_LOG_ENTER;
-    if (miscdeviceProxy_ != nullptr && serviceDeathObserver_ != nullptr) {
-        auto remoteObject = miscdeviceProxy_->AsObject();
-        if (remoteObject != nullptr) {
-            remoteObject->RemoveDeathRecipient(serviceDeathObserver_);
+    {
+        std::lock_guard<std::mutex> clientLock(clientMutex_);
+        if (miscdeviceProxy_ != nullptr && serviceDeathObserver_ != nullptr) {
+            auto remoteObject = miscdeviceProxy_->AsObject();
+            if (remoteObject != nullptr) {
+                remoteObject->RemoveDeathRecipient(serviceDeathObserver_);
+            }
         }
     }
 }
@@ -86,9 +89,12 @@ bool LightClient::IsLightIdValid(int32_t lightId)
         MISC_HILOGE("InitLightClient failed, ret:%{public}d", ret);
         return false;
     }
-    for (const auto &item : lightInfoList_) {
-        if (lightId == item.GetLightId()) {
-            return true;
+    {
+        std::lock_guard<std::mutex> clientLock(clientMutex_);
+        for (const auto &item : lightInfoList_) {
+            if (lightId == item.GetLightId()) {
+                return true;
+            }
         }
     }
     return false;
@@ -215,6 +221,7 @@ void LightClient::ClearLightInfos()
 int32_t LightClient::ConvertLightInfos()
 {
     CALL_LOG_ENTER;
+    std::lock_guard<std::mutex> clientLock(clientMutex_);
     if (lightInfoList_.empty()) {
         MISC_HILOGE("Get light lists failed");
         return ERROR;

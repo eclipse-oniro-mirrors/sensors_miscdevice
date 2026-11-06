@@ -979,6 +979,24 @@ VibratorEffectParameter VibratorServiceClient::GetVibratorEffectParameter(const 
     return VibratorEffectParameter();
 }
 
+VibratorEffectParameter VibratorServiceClient::ConsumeVibratorEffectParameter(const VibratorIdentifier &identifier,
+    bool resetLoopCount)
+{
+    std::lock_guard<std::mutex> VibratorEffectLock(vibratorEffectMutex_);
+    auto it = vibratorEffectMap_.find(identifier);
+    if (it == vibratorEffectMap_.end()) {
+        vibratorEffectMap_[identifier] = VibratorEffectParameter();
+        return VibratorEffectParameter();
+    }
+    VibratorEffectParameter param = it->second;
+    it->second.usage = USAGE_UNKNOWN;
+    it->second.systemUsage = false;
+    if (resetLoopCount) {
+        it->second.loopCount = 1;
+    }
+    return param;
+}
+
 void VibratorServiceClient::ConvertSeekVibratorPackage(const VibratorPackage &completePackage,
     VibratePackage &convertPackage, int32_t seekTime)
 {
@@ -1366,6 +1384,7 @@ int32_t VibratorServiceClient::GetVibratorList(const VibratorIdentifier& identif
         MISC_HILOGE("InitServiceClient failed, ret:%{public}d", ret);
         return MISC_NATIVE_GET_SERVICE_ERR;
     } // LCOV_EXCL_STOP
+    std::lock_guard<std::mutex> clientLock(clientMutex_);
     CHKPR(miscdeviceProxy_, OHOS::Sensors::ERROR);
 
     VibratorIdentifierIPC param;
@@ -1409,6 +1428,7 @@ int32_t VibratorServiceClient::GetEffectInfo(const VibratorIdentifier& identifie
         MISC_HILOGE("InitServiceClient failed, ret:%{public}d", ret);
         return MISC_NATIVE_GET_SERVICE_ERR;
     } // LCOV_EXCL_STOP
+    std::lock_guard<std::mutex> clientLock(clientMutex_);
     CHKPR(miscdeviceProxy_, OHOS::Sensors::ERROR);
     VibratorIdentifierIPC param;
     param.deviceId = identifier.deviceId;
@@ -1526,6 +1546,7 @@ int32_t VibratorServiceClient::DisableVibratorByPid(int32_t pid)
         MISC_HILOGE("InitServiceClient failed, ret:%{public}d", ret);
         return MISC_NATIVE_GET_SERVICE_ERR;
     }
+    std::lock_guard<std::mutex> clientLock(clientMutex_);
     CHKPR(miscdeviceProxy_, OHOS::Sensors::ERROR);
 #ifdef HIVIEWDFX_HITRACE_ENABLE
     StartTrace(HITRACE_TAG_SENSORS, "DisableVibratorByPid");
@@ -1551,6 +1572,7 @@ int32_t VibratorServiceClient::EnableVibratorByPid(int32_t pid)
         MISC_HILOGE("InitServiceClient failed, ret:%{public}d", ret);
         return MISC_NATIVE_GET_SERVICE_ERR;
     }
+    std::lock_guard<std::mutex> clientLock(clientMutex_);
     CHKPR(miscdeviceProxy_, OHOS::Sensors::ERROR);
 #ifdef HIVIEWDFX_HITRACE_ENABLE
     StartTrace(HITRACE_TAG_SENSORS, "EnableVibratorByPid");

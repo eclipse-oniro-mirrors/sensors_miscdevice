@@ -684,13 +684,17 @@ void DataCallbackImpl(VibratorStatusEvent *statusEvent)
         return;
     }
     std::string eventType("vibratorStateChange");
-    std::lock_guard<std::mutex> onCallbackLock(g_Mutex);
-    auto it = g_onCallbackInfos.find(eventType);
-    if (it == g_onCallbackInfos.end()) {
-        MISC_HILOGW("not find callback info");
-        return;
+    std::vector<sptr<CallbackObject>> callbackInfos;
+    {
+        std::lock_guard<std::mutex> onCallbackLock(g_Mutex);
+        auto it = g_onCallbackInfos.find(eventType);
+        if (it == g_onCallbackInfos.end()) {
+            MISC_HILOGW("not find callback info");
+            return;
+        }
+        callbackInfos = it->second;
     }
-    for (auto &callbackInfo : it->second) {
+    for (auto &callbackInfo : callbackInfos) {
         CallbackVibratorStatusEvent(eventType, *statusEvent, callbackInfo);
     }
 }

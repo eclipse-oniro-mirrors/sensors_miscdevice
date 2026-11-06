@@ -101,6 +101,10 @@ public:
     void SetLoopCount(const VibratorIdentifier &identifier, int32_t count);
     void SetParameters(const VibratorIdentifier &identifier, const VibratorParameter &parameter);
     VibratorEffectParameter GetVibratorEffectParameter(const VibratorIdentifier &identifier);
+    // Atomically read the effect parameter snapshot and reset it to default in one critical section,
+    // so that a concurrent SetUsage/SetLoopCount cannot be lost between reading and resetting.
+    VibratorEffectParameter ConsumeVibratorEffectParameter(const VibratorIdentifier &identifier,
+        bool resetLoopCount);
     int32_t GetVibratorList(const VibratorIdentifier& identifier, std::vector<VibratorInfos>& vibratorInfo);
     int32_t GetEffectInfo(const VibratorIdentifier& identifier, const std::string& effectType, EffectInfo& effectInfo);
     static int32_t ModulatePackage(const VibratorEvent &modulationCurve,

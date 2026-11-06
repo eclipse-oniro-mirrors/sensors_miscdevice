@@ -716,6 +716,7 @@ void MiscdeviceService::ParameterCallback(const char *key, const char *value, vo
         identifier.deviceId = -1;
         identifier.vibratorId = -1;
         MiscdeviceService *service = reinterpret_cast<MiscdeviceService *>(context);
+        std::lock_guard<std::mutex> lock(service->devicesManageMutex_);
         int32_t ret = service->StopVibratorService(identifier);
         if (ret != ERR_OK) {
             MISC_HILOGE("StopVibrator failed,ret:%{public}d", ret);
@@ -971,8 +972,12 @@ void MiscdeviceService::ReportCallTimes()
     std::unique_lock<std::mutex> lock(stopMutex_);
     stopCondition_.wait_for(lock, durationToMidnight, [this] { return stop_.load(); });
     while (!stop_) {
-        std::vector<int32_t> vibratorModeStatisticVec = {timeModeCallTimes_.load(), presetModeCallTimes_.load(),
-            fileModeCallTimes_.load(), patternModeCallTimes_.load()};
+        int32_t timeModeCallTimes = timeModeCallTimes_.exchange(0);
+        int32_t presetModeCallTimes = presetModeCallTimes_.exchange(0);
+        int32_t fileModeCallTimes = fileModeCallTimes_.exchange(0);
+        int32_t patternModeCallTimes = patternModeCallTimes_.exchange(0);
+        std::vector<int32_t> vibratorModeStatisticVec = {timeModeCallTimes, presetModeCallTimes,
+            fileModeCallTimes, patternModeCallTimes};
 #ifdef HIVIEWDFX_HISYSEVENT_ENABLE
         HiSysEventWrite(HiSysEvent::Domain::MISCDEVICE, "VIBRATOR_STATISTICS", HiSysEvent::EventType::STATISTIC,
             "STATISTICS_TYPE", "VIBRATOR_MODE", "PKG_NAME", "", "STATISTICS_DATA", vibratorModeStatisticVec);
@@ -981,12 +986,7 @@ void MiscdeviceService::ReportCallTimes()
         PriorityManager->ReportSwitchStatus();
         MISC_HILOGI("CallTimesReport timeModeCallTimes:%{public}d, presetModeCallTimes:%{public}d, "
                     "fileModeCallTimes:%{public}d, patternModeCallTimes:%{public}d",
-            timeModeCallTimes_.load(), presetModeCallTimes_.load(), fileModeCallTimes_.load(),
-            patternModeCallTimes_.load());
-        timeModeCallTimes_ = 0;
-        presetModeCallTimes_ = 0;
-        fileModeCallTimes_ = 0;
-        patternModeCallTimes_ = 0;
+            timeModeCallTimes, presetModeCallTimes, fileModeCallTimes, patternModeCallTimes);
         stopCondition_.wait_for(lock, std::chrono::hours(HOURS_IN_DAY), [this] { return stop_.load(); });
     }
 }
