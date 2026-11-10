@@ -985,8 +985,9 @@ VibratorEffectParameter VibratorServiceClient::ConsumeVibratorEffectParameter(co
     std::lock_guard<std::mutex> VibratorEffectLock(vibratorEffectMutex_);
     auto it = vibratorEffectMap_.find(identifier);
     if (it == vibratorEffectMap_.end()) {
-        vibratorEffectMap_[identifier] = VibratorEffectParameter();
-        return VibratorEffectParameter();
+        VibratorEffectParameter vib = VibratorEffectParameter();
+        vibratorEffectMap_[identifier] = vib;
+        return vib;
     }
     VibratorEffectParameter param = it->second;
     it->second.usage = USAGE_UNKNOWN;
