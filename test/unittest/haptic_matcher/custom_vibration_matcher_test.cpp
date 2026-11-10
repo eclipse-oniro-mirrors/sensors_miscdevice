@@ -38,8 +38,11 @@ constexpr int32_t EVENT_FREQUENCY = 40;
 constexpr int32_t EVENT_TIME_LATER = 200;
 constexpr int32_t EVENT_DURATION = 100;
 constexpr int32_t CLAMP_MIN_DURATION = 15;
-// Mirror the anonymous-namespace constant in custom_vibration_matcher.cpp, which is invisible here.
+// Mirror the anonymous-namespace constants in custom_vibration_matcher.cpp, which are invisible here.
 constexpr int32_t VIBRATOR_DELAY = 20;
+constexpr int32_t INTENSITY_MAX = 100;
+constexpr int32_t FREQUENCY_MAX = 100;
+constexpr int32_t CONTINUOUS_GRADE_MASK = 100;
 }  // namespace
 
 class CustomVibrationMatcherTest : public testing::Test {
@@ -59,13 +62,13 @@ protected:
         std::vector<HdfWaveInformation> waveInfos;
         HdfWaveInformation first;
         first.waveId = WAVE_ID_FIRST;
-        first.intensity = 100;
+        first.intensity = INTENSITY_MAX;
         first.frequency = 0;
         first.duration = WAVE_DURATION;
         HdfWaveInformation second;
         second.waveId = WAVE_ID_SECOND;
         second.intensity = 0;
-        second.frequency = 100;
+        second.frequency = FREQUENCY_MAX;
         second.duration = WAVE_DURATION;
         waveInfos.push_back(first);
         waveInfos.push_back(second);
@@ -121,11 +124,11 @@ HWTEST_F(CustomVibrationMatcherTest, Construct_002, TestSize.Level1)
     CustomVibrationMatcher matcher(identifier, waveInfos);
     EXPECT_EQ(matcher.hdfWaveInfos_.size(), 2UL);
     ASSERT_EQ(matcher.waveInfos_.size(), 2UL);
-    EXPECT_EQ(matcher.waveInfos_[WAVE_ID_FIRST][0], 100);  // 100 / (100 / 100)
+    EXPECT_EQ(matcher.waveInfos_[WAVE_ID_FIRST][0], INTENSITY_MAX);  // 100 / (100 / 100)
     EXPECT_EQ(matcher.waveInfos_[WAVE_ID_FIRST][1], 0);   // (0 - 0) / ((100 - 0) / 100)
     EXPECT_EQ(matcher.waveInfos_[WAVE_ID_FIRST][2], WAVE_DURATION);
     EXPECT_EQ(matcher.waveInfos_[WAVE_ID_SECOND][0], 0);
-    EXPECT_EQ(matcher.waveInfos_[WAVE_ID_SECOND][1], 100);
+    EXPECT_EQ(matcher.waveInfos_[WAVE_ID_SECOND][1], FREQUENCY_MAX);
     EXPECT_EQ(matcher.waveInfos_[WAVE_ID_SECOND][2], WAVE_DURATION);
 }
 
@@ -159,7 +162,7 @@ HWTEST_F(CustomVibrationMatcherTest, NormalizedWaveInfo_002, TestSize.Level2)
     std::vector<HdfWaveInformation> waveInfos;
     HdfWaveInformation wave;
     wave.waveId = WAVE_ID_FIRST;
-    wave.intensity = 100;
+    wave.intensity = INTENSITY_MAX;
     wave.frequency = 50;
     wave.duration = WAVE_DURATION;
     waveInfos.push_back(wave);
@@ -330,7 +333,7 @@ HWTEST_F(CustomVibrationMatcherTest, TransformEffect_003, TestSize.Level1)
     // wave 1 normalized to [100, 0, 50], distance = 0.5 * |90 - 100| + 0.5 * |10 - 0| = 10
     // wave 2 normalized to [0, 100, 50], distance = 0.5 * |90 - 0| + 0.5 * |10 - 100| = 90
     EXPECT_EQ(compositeEffects[0].primitiveEffect.effectId, -WAVE_ID_FIRST);
-    EXPECT_EQ(compositeEffects[0].primitiveEffect.intensity, 100);
+    EXPECT_EQ(compositeEffects[0].primitiveEffect.intensity, INTENSITY_MAX);
     EXPECT_EQ(compositeEffects[1].primitiveEffect.delay, WAVE_DURATION);
 }
 
@@ -595,13 +598,13 @@ HWTEST_F(CustomVibrationMatcherTest, ProcessContinuousEventSlice_001, TestSize.L
     VibratorIdentifierIPC identifier;
     std::vector<HdfWaveInformation> waveInfos;
     CustomVibrationMatcher matcher(identifier, waveInfos);
-    VibrateSlice slice = {0, WAVE_DURATION, 100, 0};
+    VibrateSlice slice = {0, WAVE_DURATION, INTENSITY_MAX, 0};
     int32_t preStartTime = 0;
     int32_t preDuration = 0;
     std::vector<CompositeEffect> compositeEffects;
     matcher.ProcessContinuousEventSlice(slice, preStartTime, preDuration, compositeEffects);
     ASSERT_EQ(compositeEffects.size(), 1UL);
-    EXPECT_EQ(compositeEffects[0].primitiveEffect.effectId, WAVE_DURATION * 100 + 7);
+    EXPECT_EQ(compositeEffects[0].primitiveEffect.effectId, WAVE_DURATION * CONTINUOUS_GRADE_MASK + 7);
     EXPECT_EQ(preStartTime, 0);
     EXPECT_EQ(preDuration, WAVE_DURATION);
 }
@@ -623,7 +626,7 @@ HWTEST_F(CustomVibrationMatcherTest, ProcessContinuousEventSlice_002, TestSize.L
     matcher.ProcessContinuousEventSlice(slice, preStartTime, preDuration, compositeEffects);
     ASSERT_EQ(compositeEffects.size(), 1UL);
     // round(50 / 12.5 + 0.5) - 1 = round(4.5) - 1 = 4
-    EXPECT_EQ(compositeEffects[0].primitiveEffect.effectId % 100, 4);
+    EXPECT_EQ(compositeEffects[0].primitiveEffect.effectId % CONTINUOUS_GRADE_MASK, 4);
 }
 
 /**
@@ -644,7 +647,7 @@ HWTEST_F(CustomVibrationMatcherTest, ProcessContinuousEventSlice_003, TestSize.L
     VibrateSlice second = {WAVE_DURATION * 2, WAVE_DURATION * 2, EVENT_INTENSITY_MIDDLE, 0};
     matcher.ProcessContinuousEventSlice(second, preStartTime, preDuration, compositeEffects);
     ASSERT_EQ(compositeEffects.size(), 1UL);
-    EXPECT_EQ(compositeEffects[0].primitiveEffect.effectId, WAVE_DURATION * 4 * 100 + 4);
+    EXPECT_EQ(compositeEffects[0].primitiveEffect.effectId, WAVE_DURATION * 4 * CONTINUOUS_GRADE_MASK + 4);
     EXPECT_EQ(preDuration, WAVE_DURATION * 4);
 }
 
@@ -708,7 +711,7 @@ HWTEST_F(CustomVibrationMatcherTest, ProcessContinuousEvent_001, TestSize.Level1
     std::vector<CompositeEffect> compositeEffects;
     matcher.ProcessContinuousEvent(event, preStartTime, preDuration, compositeEffects);
     ASSERT_EQ(compositeEffects.size(), 1UL);
-    EXPECT_EQ(compositeEffects[0].primitiveEffect.effectId, WAVE_DURATION * 100 + 4);
+    EXPECT_EQ(compositeEffects[0].primitiveEffect.effectId, WAVE_DURATION * CONTINUOUS_GRADE_MASK + 4);
 }
 
 /**
@@ -750,7 +753,7 @@ HWTEST_F(CustomVibrationMatcherTest, ProcessContinuousEvent_003, TestSize.Level1
     matcher.ProcessContinuousEvent(event, preStartTime, preDuration, compositeEffects);
     // intensity 80 -> grade round(80 / 12.5 + 0.5) - 1 = 6, two adjacent slices are merged
     ASSERT_EQ(compositeEffects.size(), 1UL);
-    EXPECT_EQ(compositeEffects[0].primitiveEffect.effectId, EVENT_DURATION * 2 * 100 + 6);
+    EXPECT_EQ(compositeEffects[0].primitiveEffect.effectId, EVENT_DURATION * 2 * CONTINUOUS_GRADE_MASK + 6);
 }
 
 /**
@@ -775,7 +778,7 @@ HWTEST_F(CustomVibrationMatcherTest, ProcessTransientEvent_001, TestSize.Level2)
     matcher.ProcessTransientEvent(event, preStartTime, preDuration, compositeEffects);
     ASSERT_EQ(compositeEffects.size(), 1UL);
     EXPECT_EQ(compositeEffects[0].primitiveEffect.effectId, 0);
-    EXPECT_EQ(compositeEffects[0].primitiveEffect.intensity, 100);
+    EXPECT_EQ(compositeEffects[0].primitiveEffect.intensity, INTENSITY_MAX);
 }
 
 /**
