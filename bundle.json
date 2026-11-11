@@ -113,7 +113,8 @@
         "//base/sensors/miscdevice/test/unittest/vibrator/capi:unittest",
         "//base/sensors/miscdevice/test/unittest/light:unittest",
         "//base/sensors/miscdevice/test/fuzztest/service:fuzztest",
-        "//base/sensors/miscdevice/test/unittest/hdi_connection:unittest"
+        "//base/sensors/miscdevice/test/unittest/hdi_connection:unittest",
+        "//base/sensors/miscdevice/test/unittest/haptic_matcher:unittest"
       ]
     }
   }
