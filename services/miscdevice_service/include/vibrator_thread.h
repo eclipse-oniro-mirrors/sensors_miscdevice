@@ -16,6 +16,7 @@
 #ifndef VIBRATOR_THREAD_H
 #define VIBRATOR_THREAD_H
 
+#include <atomic>
 #include <thread>
 
 #include "thread_ex.h"
@@ -26,6 +27,7 @@ namespace OHOS {
 namespace Sensors {
 class VibratorThread : public Thread {
 public:
+    ~VibratorThread() override;
     void UpdateVibratorEffect(const VibrateInfo &vibrateInfo, const VibratorIdentifierIPC& identifier,
         std::vector<HdfWaveInformation> &waveInfos);
     VibrateInfo GetCurrentVibrateInfo();
@@ -34,7 +36,7 @@ public:
     void NotifyExit();
     void ResetVibrateInfo();
 protected:
-    virtual bool Run();
+    virtual bool Run() override;
 
 private:
     VibratorIdentifierIPC GetCurrentVibrateParams();
@@ -59,6 +61,10 @@ private:
     std::mutex vibrateMutex_;
     std::condition_variable cv_;
     std::atomic<bool> exitFlag_ = false;
+    // True while this object is being destructed. The exiting thread must skip HDI operations in
+    // this case: destruction may happen at process exit (static devicesManageMap_ teardown),
+    // when the destruction order of the HDI singletons is unspecified.
+    std::atomic<bool> isDestroying_ = false;
 };
 #define VibratorDevice VibratorHdiConnection::GetInstance()
 }  // namespace Sensors
