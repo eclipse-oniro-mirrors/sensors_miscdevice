@@ -40,6 +40,21 @@ constexpr size_t COMPOSITE_EFFECT_PART = 128;
 #endif // HDF_DRIVERS_INTERFACE_VIBRATOR
 }  // namespace
 
+VibratorThread::~VibratorThread()
+{
+    // The OS_VibControl thread is detached. When the last reference of this object is released
+    // while the thread is still blocked in Run() (e.g. waiting for the end of a long vibration
+    // in cv_.wait_for), which happens when the static devicesManageMap_ is destructed at process
+    // exit or a device entry is erased after being unplugged, wake the thread up and wait until
+    // it leaves Run() before the members are destructed. Otherwise the detached thread would
+    // keep reading the destructed members and cause UAF.
+    if (IsRunning()) {
+        isDestroying_.store(true);
+        NotifyExit();
+        NotifyExitSync();
+    }
+}
+
 bool VibratorThread::Run()
 {
     CALL_LOG_ENTER;
@@ -93,7 +108,9 @@ int32_t VibratorThread::PlayOnce(const VibrateInfo &info, const VibratorIdentifi
     cv_.wait_for(vibrateLck, std::chrono::milliseconds(info.duration), [this] { return exitFlag_.load(); });
     if (exitFlag_) {
 #ifdef HDF_DRIVERS_INTERFACE_VIBRATOR
-        VibratorDevice.Stop(identifier, HDF_VIBRATOR_MODE_ONCE);
+        if (!isDestroying_) {
+            VibratorDevice.Stop(identifier, HDF_VIBRATOR_MODE_ONCE);
+        }
 #endif // HDF_DRIVERS_INTERFACE_VIBRATOR
         MISC_HILOGD("Stop duration:%{public}d, package:%{public}s", info.duration, info.packageName.c_str());
         return SUCCESS;
@@ -139,7 +156,9 @@ int32_t VibratorThread::PlayEffect(const VibrateInfo &info, const VibratorIdenti
         cv_.wait_for(vibrateLck, std::chrono::milliseconds(duration), [this] { return exitFlag_.load(); });
         if (exitFlag_) {
 #ifdef HDF_DRIVERS_INTERFACE_VIBRATOR
-            VibratorDevice.Stop(identifier, HDF_VIBRATOR_MODE_PRESET);
+            if (!isDestroying_) {
+                VibratorDevice.Stop(identifier, HDF_VIBRATOR_MODE_PRESET);
+            }
 #endif // HDF_DRIVERS_INTERFACE_VIBRATOR
             MISC_HILOGD("Stop effect:%{public}s, package:%{public}s", effect.c_str(), info.packageName.c_str());
             return SUCCESS;
@@ -163,7 +182,9 @@ int32_t VibratorThread::PlayCustomByHdHptic(const VibrateInfo &info, const Vibra
         cv_.wait_for(vibrateLck, std::chrono::milliseconds(delayTime), [this] { return exitFlag_.load(); });
         if (exitFlag_) {
 #ifdef HDF_DRIVERS_INTERFACE_VIBRATOR
-            VibratorDevice.Stop(identifier, HDF_VIBRATOR_MODE_HDHAPTIC);
+            if (!isDestroying_) {
+                VibratorDevice.Stop(identifier, HDF_VIBRATOR_MODE_HDHAPTIC);
+            }
 #endif // HDF_DRIVERS_INTERFACE_VIBRATOR
             MISC_HILOGD("Stop hd haptic, package:%{public}s", info.packageName.c_str());
             return SUCCESS;
@@ -263,7 +284,9 @@ int32_t VibratorThread::PlayCompositeEffect(const VibrateInfo &info, const HdfCo
             effectsPart.compositeEffects.clear();
         }
         if (exitFlag_) {
-            VibratorDevice.Stop(identifier, HDF_VIBRATOR_MODE_PRESET);
+            if (!isDestroying_) {
+                VibratorDevice.Stop(identifier, HDF_VIBRATOR_MODE_PRESET);
+            }
             MISC_HILOGD("Stop composite effect part, package:%{public}s", info.packageName.c_str());
             return SUCCESS;
         }
