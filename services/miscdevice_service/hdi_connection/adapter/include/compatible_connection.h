@@ -25,7 +25,7 @@ namespace Sensors {
 class CompatibleConnection : public IVibratorHdiConnection {
 public:
     CompatibleConnection() = default;
-    virtual ~CompatibleConnection() {};
+    virtual ~CompatibleConnection();
     int32_t ConnectHdi() override;
     int32_t StartOnce(const VibratorIdentifierIPC &identifier, uint32_t duration) override;
     int32_t Start(const VibratorIdentifierIPC &identifier, const std::string &effectType) override;

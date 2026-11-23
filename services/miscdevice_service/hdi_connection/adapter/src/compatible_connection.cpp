@@ -59,6 +59,15 @@ constexpr int32_t MOCK_VIBRATOR_IS_LOCAL = 1;
 std::atomic_int32_t CompatibleConnection::duration_ = 0;
 std::atomic_bool CompatibleConnection::isStop_ = true;
 
+CompatibleConnection::~CompatibleConnection()
+{
+    if (vibrateThread_.joinable()) {
+        MISC_HILOGI("Stop vibrate thread");
+        isStop_ = true;
+        vibrateThread_.join();
+    }
+}
+
 int32_t CompatibleConnection::ConnectHdi()
 {
     CALL_LOG_ENTER;
