@@ -15,74 +15,97 @@
 
 #include "seektimeonpackage_fuzzer.h"
 
-#include "accesstoken_kit.h"
-#include "nativetoken_kit.h"
-#include "securec.h"
-#include "token_setproc.h"
-#include "vibrator_agent.h"
+#include <cstddef>
+#include <cstdint>
+#include <cstdlib>
+#include <fuzzer/FuzzedDataProvider.h>
+
+#include "vibrator_service_client.h"
+#include "sensors_errors.h"
 
 namespace OHOS {
-using namespace Security::AccessToken;
-using Security::AccessToken::AccessTokenID;
+namespace Sensors {
 namespace {
-constexpr size_t DATA_MIN_SIZE = 20;
+constexpr int32_t MAX_PATTERN_NUM_TEST = 4;
+constexpr int32_t MAX_EVENT_NUM_TEST = 17;
+constexpr int32_t MAX_POINT_NUM_TEST = 16;
+constexpr int32_t EVENT_TYPE_MIN_TEST = -2;
+constexpr int32_t EVENT_TYPE_MAX_TEST = 3;
+
+void FreeSeekPackage(VibratorPackage &package)
+{
+    if (package.patternNum > 0) {
+        VibratorServiceClient::FreeVibratorPackage(package);
+    } else if (package.patterns != nullptr) {
+        free(package.patterns);
+        package.patterns = nullptr;
+    }
+}
 } // namespace
 
-template<class T>
-size_t GetObject(const uint8_t *data, size_t size, T &object)
+bool SeekTimeOnPackageFuzzTest(FuzzedDataProvider &fdp, int32_t seekTime)
 {
-    size_t objectSize = sizeof(object);
-    if (objectSize > size) {
-        return 0;
+    // Fuzz the complete package so ConvertSeekVibratorPackage iterates real
+    // patterns/events and reaches SkipEventAndConvertVibratorEvent branches:
+    // pattern before/after seekTime, continuous/transient events, events long
+    // enough or too short to survive seeking, curve point counts in and out
+    // of [CURVE_POINT_NUM_MIN, CURVE_POINT_NUM_MAX].
+    VibratorCurvePoint pointPool[MAX_PATTERN_NUM_TEST * MAX_EVENT_NUM_TEST * MAX_POINT_NUM_TEST] = {};
+    VibratorEvent eventPool[MAX_PATTERN_NUM_TEST][MAX_EVENT_NUM_TEST] = {};
+    VibratorPattern patternPool[MAX_PATTERN_NUM_TEST] = {};
+    for (int32_t p = 0; p < MAX_PATTERN_NUM_TEST; ++p) {
+        patternPool[p].events = eventPool[p];
+        for (int32_t e = 0; e < MAX_EVENT_NUM_TEST; ++e) {
+            eventPool[p][e].points =
+                &pointPool[(p * MAX_EVENT_NUM_TEST + e) * MAX_POINT_NUM_TEST];
+        }
     }
-    errno_t ret = memcpy_s(&object, objectSize, data, objectSize);
-    if (ret != EOK) {
-        return 0;
+    VibratorPackage completePackage;
+    completePackage.patternNum = fdp.ConsumeIntegralInRange<int32_t>(0, MAX_PATTERN_NUM_TEST);
+    completePackage.packageDuration = fdp.ConsumeIntegral<int32_t>();
+    completePackage.patterns = patternPool;
+    for (int32_t p = 0; p < completePackage.patternNum; ++p) {
+        patternPool[p].time = fdp.ConsumeIntegral<int32_t>();
+        patternPool[p].patternDuration = fdp.ConsumeIntegral<int32_t>();
+        patternPool[p].eventNum = fdp.ConsumeIntegralInRange<int32_t>(0, MAX_EVENT_NUM_TEST);
+        for (int32_t e = 0; e < patternPool[p].eventNum; ++e) {
+            VibratorEvent &fuzzEvent = eventPool[p][e];
+            fuzzEvent.type = static_cast<VibratorEventType>(
+                fdp.ConsumeIntegralInRange<int8_t>(EVENT_TYPE_MIN_TEST, EVENT_TYPE_MAX_TEST));
+            fuzzEvent.time = fdp.ConsumeIntegral<int32_t>();
+            fuzzEvent.duration = fdp.ConsumeIntegral<int32_t>();
+            fuzzEvent.intensity = fdp.ConsumeIntegral<int32_t>();
+            fuzzEvent.frequency = fdp.ConsumeIntegral<int32_t>();
+            fuzzEvent.pointNum = fdp.ConsumeIntegralInRange<int32_t>(0, MAX_POINT_NUM_TEST);
+            for (int32_t k = 0; k < fuzzEvent.pointNum; ++k) {
+                VibratorCurvePoint &fuzzPoint = fuzzEvent.points[k];
+                fuzzPoint.time = fdp.ConsumeIntegral<int32_t>();
+                fuzzPoint.intensity = fdp.ConsumeIntegral<int32_t>();
+                fuzzPoint.frequency = fdp.ConsumeIntegral<int32_t>();
+            }
+        }
     }
-    return objectSize;
-}
 
-void SetUpTestCase()
-{
-    const char **perms = new (std::nothrow) const char *[1];
-    if (perms == nullptr) {
-        return;
+    // Call the internal conversion chain through the singleton so ConvertSeekVibratorPackage,
+    // SkipEventAndConvertVibratorEvent, ConvertVibratorPattern and ConvertVibratorPackage
+    // in vibrator_service_client.cpp are compiled and counted inside this fuzz binary
+    // (same approach as the merged handlevibratordata_fuzzer: internal entries only, no
+    // cross-DSO C API calls that would depend on the system image's shared libraries).
+    VibratorPackage seekPackage;
+    int32_t ret = VibratorServiceClient::GetInstance().SeekTimeOnPackage(seekTime, completePackage,
+        seekPackage);
+    if (ret == ERR_OK) {
+        FreeSeekPackage(seekPackage);
     }
-    perms[0] = "ohos.permission.VIBRATE";
-    TokenInfoParams infoInstance = {
-        .dcapsNum = 0,
-        .permsNum = 1,
-        .aclsNum = 0,
-        .dcaps = nullptr,
-        .perms = perms,
-        .acls = nullptr,
-        .processName = "SeekTimeOnPackageTest",
-        .aplStr = "system_core",
-    };
-    uint64_t tokenId = GetAccessTokenId(&infoInstance);
-    SetSelfTokenID(tokenId);
-    AccessTokenKit::ReloadNativeTokenInfo();
-    delete[] perms;
+    return true;
 }
-
-void SeekTimeOnPackageFuzzTest(const uint8_t *data, size_t size)
-{
-    if (data == nullptr || size < DATA_MIN_SIZE) {
-        return;
-    }
-    SetUpTestCase();
-    VibratorPackage packageIn{ 0 };
-    VibratorPackage packageOut{ 0 };
-    size_t startPos = 0;
-    startPos += GetObject<int32_t>(data + startPos, size - startPos, packageOut.patternNum);
-    GetObject<int32_t>(data + startPos, size - startPos, packageOut.packageDuration);
-    int32_t seekTime{ 0 };
-    OHOS::Sensors::SeekTimeOnPackage(seekTime, packageIn, packageOut);
-}
+} // namespace Sensors
 } // namespace OHOS
 
 extern "C" int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size)
 {
-    OHOS::SeekTimeOnPackageFuzzTest(data, size);
+    FuzzedDataProvider fdp(data, size);
+    int32_t seekTime = fdp.ConsumeIntegral<int32_t>();
+    OHOS::Sensors::SeekTimeOnPackageFuzzTest(fdp, seekTime);
     return 0;
 }
