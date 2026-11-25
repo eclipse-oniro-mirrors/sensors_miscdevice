@@ -22,8 +22,10 @@ ohos_fuzztest("ModulatePackageFuzzTest") {
   fuzz_config_file = "$SUBSYSTEM_DIR/test/fuzztest/vibrator/modulatepackage_fuzzer"
 
   include_dirs = [
-    "$SUBSYSTEM_DIR/frameworks/native/vibrator",
+    "$SUBSYSTEM_DIR/frameworks/native/vibrator/include",
     "$SUBSYSTEM_DIR/test/fuzztest/vibrator/modulatepackage_fuzzer",
+    "$SUBSYSTEM_DIR/utils/common/include",
+    "$SUBSYSTEM_DIR/utils/haptic_decoder/interface",
   ]
 
   cflags = [
@@ -33,17 +35,31 @@ ohos_fuzztest("ModulatePackageFuzzTest") {
     "-fno-omit-frame-pointer",
   ]
 
-  sources = [ "modulatepackage_fuzzer.cpp" ]
+  # Compile vibrator_service_client.cpp into the fuzz binary directly so the
+  # modulation call chain inside it is instrumented and counted for fuzz
+  # coverage (same approach as handlevibratordata_fuzzer).
+  sources = [
+    "modulatepackage_fuzzer.cpp",
+    "$SUBSYSTEM_DIR/frameworks/native/vibrator/src/vibrator_service_client.cpp",
+  ]
 
-  deps =
-      [ "$SUBSYSTEM_DIR/frameworks/native/vibrator:vibrator_interface_native" ]
+  deps = [
+    "$SUBSYSTEM_DIR/frameworks/native/light:light_ndk_header",
+    "$SUBSYSTEM_DIR/frameworks/native/vibrator:libvibrator_native",
+    "$SUBSYSTEM_DIR/frameworks/native/vibrator:miscdevice_service_proxy",
+    "$SUBSYSTEM_DIR/frameworks/native/vibrator:vibrator_interface_native",
+    "$SUBSYSTEM_DIR/utils/common:libmiscdevice_utils",
+  ]
 
   external_deps = [
-    "access_token:libaccesstoken_sdk",
-    "access_token:libnativetoken_shared",
-    "access_token:libtokensetproc_shared",
     "bounds_checking_function:libsec_shared",
+    "cJSON:cjson",
     "c_utils:utils",
+    "hilog:libhilog",
+    "hitrace:hitrace_meter",
+    "hisysevent:libhisysevent",
+    "ipc:ipc_single",
+    "samgr:samgr_proxy",
   ]
 }
 

@@ -17,55 +17,105 @@
 
 #include <cstddef>
 #include <cstdint>
-#include <cstring>
 #include <fuzzer/FuzzedDataProvider.h>
-#include <string>
 
-#include "accesstoken_kit.h"
-#include "nativetoken_kit.h"
-#include "securec.h"
-#include "token_setproc.h"
-
-#include "vibrator_agent.h"
+#include "vibrator_service_client.h"
+#include "sensors_errors.h"
 
 namespace OHOS {
 namespace Sensors {
-using namespace Security::AccessToken;
-using Security::AccessToken::AccessTokenID;
-
 namespace {
-constexpr int32_t PARAMETER_NUM_ONE = 1;
+constexpr int32_t MAX_PATTERN_NUM_TEST = 4;
+constexpr int32_t MAX_EVENT_NUM_TEST = 4;
+constexpr int32_t MAX_POINT_NUM_TEST = 16;
+constexpr size_t POINT_POOL_SIZE = MAX_PATTERN_NUM_TEST * MAX_EVENT_NUM_TEST * MAX_POINT_NUM_TEST;
+constexpr int32_t EVENT_TYPE_MIN_TEST = -2;
+constexpr int32_t EVENT_TYPE_MAX_TEST = 3;
+
+void FillCurvePoints(FuzzedDataProvider &fdp, VibratorCurvePoint *points, int32_t pointNum)
+{
+    for (int32_t i = 0; i < pointNum; ++i) {
+        points[i].time = fdp.ConsumeIntegral<int32_t>();
+        points[i].intensity = fdp.ConsumeIntegral<int32_t>();
+        points[i].frequency = fdp.ConsumeIntegral<int32_t>();
+    }
+}
+
+void FillModulationCurve(FuzzedDataProvider &fdp, VibratorEvent &modulationCurve, int32_t modulationTime,
+    VibratorCurvePoint (&modPoints)[MAX_POINT_NUM_TEST])
+{
+    modulationCurve.type = EVENT_TYPE_CONTINUOUS;
+    modulationCurve.time = modulationTime;
+    modulationCurve.duration = fdp.ConsumeIntegral<int32_t>();
+    modulationCurve.intensity = fdp.ConsumeIntegral<int32_t>();
+    modulationCurve.frequency = fdp.ConsumeIntegral<int32_t>();
+    modulationCurve.pointNum = fdp.ConsumeIntegralInRange<int32_t>(0, MAX_POINT_NUM_TEST);
+    modulationCurve.points = modPoints;
+    FillCurvePoints(fdp, modPoints, modulationCurve.pointNum);
+}
+
+void FillEventFields(FuzzedDataProvider &fdp, VibratorEvent &fuzzEvent)
+{
+    fuzzEvent.type = static_cast<VibratorEventType>(
+        fdp.ConsumeIntegralInRange<int8_t>(EVENT_TYPE_MIN_TEST, EVENT_TYPE_MAX_TEST));
+    fuzzEvent.time = fdp.ConsumeIntegral<int32_t>();
+    fuzzEvent.duration = fdp.ConsumeIntegral<int32_t>();
+    fuzzEvent.intensity = fdp.ConsumeIntegral<int32_t>();
+    fuzzEvent.frequency = fdp.ConsumeIntegral<int32_t>();
+    fuzzEvent.pointNum = fdp.ConsumeIntegralInRange<int32_t>(0, MAX_POINT_NUM_TEST);
+    FillCurvePoints(fdp, fuzzEvent.points, fuzzEvent.pointNum);
+}
+
+void FillPackageBeforeModulation(FuzzedDataProvider &fdp, VibratorPackage &package,
+    VibratorCurvePoint (&pointPool)[POINT_POOL_SIZE],
+    VibratorEvent (&eventPool)[MAX_PATTERN_NUM_TEST][MAX_EVENT_NUM_TEST],
+    VibratorPattern (&patternPool)[MAX_PATTERN_NUM_TEST])
+{
+    for (int32_t p = 0; p < MAX_PATTERN_NUM_TEST; ++p) {
+        patternPool[p].events = eventPool[p];
+        for (int32_t e = 0; e < MAX_EVENT_NUM_TEST; ++e) {
+            eventPool[p][e].points = &pointPool[(p * MAX_EVENT_NUM_TEST + e) * MAX_POINT_NUM_TEST];
+        }
+    }
+    package.patterns = patternPool;
+    package.patternNum = fdp.ConsumeIntegralInRange<int32_t>(0, MAX_PATTERN_NUM_TEST);
+    package.packageDuration = fdp.ConsumeIntegral<int32_t>();
+    for (int32_t p = 0; p < package.patternNum; ++p) {
+        patternPool[p].time = fdp.ConsumeIntegral<int32_t>();
+        patternPool[p].patternDuration = fdp.ConsumeIntegral<int32_t>();
+        patternPool[p].eventNum = fdp.ConsumeIntegralInRange<int32_t>(0, MAX_EVENT_NUM_TEST);
+        for (int32_t e = 0; e < patternPool[p].eventNum; ++e) {
+            FillEventFields(fdp, eventPool[p][e]);
+        }
+    }
+}
 } // namespace
 
-bool ModulatePackageFuzzTest(FuzzedDataProvider &provider)
+bool ModulatePackageFuzzTest(FuzzedDataProvider &fdp, int32_t modulationTime)
 {
-    VibratorCurvePoint modulationCurve;
-    modulationCurve.time = provider.ConsumeIntegral<int32_t>();
-    modulationCurve.intensity = provider.ConsumeIntegral<int32_t>();
-    modulationCurve.frequency = provider.ConsumeIntegral<int32_t>();
-    VibratorEvent event;
-    event.time = provider.ConsumeIntegral<int32_t>();
-    event.duration = provider.ConsumeIntegral<int32_t>();
-    event.intensity = provider.ConsumeIntegral<int32_t>();
-    event.frequency = provider.ConsumeIntegral<int32_t>();
-    event.pointNum = PARAMETER_NUM_ONE;
-    event.points = &modulationCurve;
-    VibratorPattern pattern;
-    pattern.time = provider.ConsumeIntegral<int32_t>();
-    pattern.eventNum = PARAMETER_NUM_ONE;
-    pattern.patternDuration = provider.ConsumeIntegral<int32_t>();
-    pattern.events = &event;
-    int32_t curvePointNum = 1;
-    int32_t duration = 300;
-    VibratorPackage package;
-    package.patternNum = PARAMETER_NUM_ONE;
-    package.packageDuration = provider.ConsumeIntegral<int32_t>();
-    package.patterns = &pattern;
-    VibratorPackage packageAfterModulation;
-    packageAfterModulation.patternNum = PARAMETER_NUM_ONE;
-    packageAfterModulation.packageDuration = provider.ConsumeIntegral<int32_t>();
-    packageAfterModulation.patterns = &pattern;
-    OHOS::Sensors::ModulatePackage(&modulationCurve, curvePointNum, duration, package, packageAfterModulation);
+    // Fuzz the modulation curve event, its pointNum and points decide the curve intervals.
+    VibratorCurvePoint modPoints[MAX_POINT_NUM_TEST] = {};
+    VibratorEvent modulationCurve;
+    FillModulationCurve(fdp, modulationCurve, modulationTime, modPoints);
+
+    // Fuzz the package before modulation: patterns -> events -> curve points.
+    VibratorCurvePoint pointPool[POINT_POOL_SIZE] = {};
+    VibratorEvent eventPool[MAX_PATTERN_NUM_TEST][MAX_EVENT_NUM_TEST] = {};
+    VibratorPattern patternPool[MAX_PATTERN_NUM_TEST] = {};
+    VibratorPackage beforeModulationPackage;
+    FillPackageBeforeModulation(fdp, beforeModulationPackage, pointPool, eventPool, patternPool);
+
+    // Call the internal pure logic directly so the modulation chain in vibrator_service_client.cpp
+    // is compiled and counted inside this fuzz binary: ModulatePackage -> ModulateVibratorPattern
+    // -> ModulateVibratorEvent -> ModulateEvent(With|Without)CurvePoints -> GetCurveListAfterModulation
+    // -> BinarySearchInterval / ConvertVibratorEventsToCurveIntervals / Restrict*Range, and the
+    // FreePartiallyAllocated* chains on error paths.
+    VibratorPackage afterModulationPackage;
+    int32_t ret = VibratorServiceClient::ModulatePackage(modulationCurve, beforeModulationPackage,
+        afterModulationPackage);
+    if (ret == ERR_OK) {
+        VibratorServiceClient::FreeVibratorPackage(afterModulationPackage);
+    }
     return true;
 }
 } // namespace Sensors
@@ -73,7 +123,8 @@ bool ModulatePackageFuzzTest(FuzzedDataProvider &provider)
 
 extern "C" int LLVMFuzzerTestOneInput(const uint8_t *data, size_t size)
 {
-    FuzzedDataProvider provider(data, size);
-    OHOS::Sensors::ModulatePackageFuzzTest(provider);
+    FuzzedDataProvider fdp(data, size);
+    int32_t modulationTime = fdp.ConsumeIntegral<int32_t>();
+    OHOS::Sensors::ModulatePackageFuzzTest(fdp, modulationTime);
     return 0;
 }

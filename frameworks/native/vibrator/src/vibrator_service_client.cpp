@@ -1260,6 +1260,10 @@ VibratorCurvePoint* VibratorServiceClient::GetCurveListAfterModulation(
     const std::vector<VibratorCurveInterval>& modInterval, const VibratorEvent &beforeModEvent,
     int32_t patternOffset)
 {
+    if (modInterval.empty()) {
+        MISC_HILOGE("GetCurveListAfterModulation failed because modInterval is empty");
+        return nullptr;
+    }
     VibratorCurvePoint* curvePoints = static_cast<VibratorCurvePoint *>(
         calloc(beforeModEvent.pointNum, sizeof(VibratorCurvePoint)));
     if (curvePoints == nullptr) {
