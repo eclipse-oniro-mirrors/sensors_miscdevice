@@ -32,7 +32,7 @@ public:
     virtual ~VibratorClientProxy() = default;
     int ProcessPlugEvent(int32_t eventCode, int32_t deviceId, int32_t vibratorCnt) override
     {
-        MessageOption option;
+        MessageOption option(MessageOption::TF_ASYNC);
         MessageParcel dataParcel;
         MessageParcel replyParcel;
         
